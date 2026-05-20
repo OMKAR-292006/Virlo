@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -48,15 +49,26 @@ export default function LoginPage() {
       </div>
 
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 mb-10 z-10 group">
-        <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
-          <Sparkles size={18} className="text-white" />
-        </div>
-        <span className="font-bold text-xl tracking-tight text-white">Brand Matic</span>
-      </Link>
+      <motion.div
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+      >
+        <Link href="/" className="flex items-center gap-2 mb-10 z-10 group">
+          <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
+            <Sparkles size={18} className="text-white" />
+          </div>
+          <span className="font-bold text-xl tracking-tight text-white">Brand Matic</span>
+        </Link>
+      </motion.div>
 
       {/* Card */}
-      <div className="w-full max-w-sm z-10">
+      <motion.div
+        className="w-full max-w-sm z-10"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+      >
         <div className="bg-[#0a0a0a] border border-white/[0.08] rounded-3xl p-8 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
           
           <div className="mb-8">
@@ -116,12 +128,20 @@ export default function LoginPage() {
             </div>
 
             {/* Error */}
-            {error && (
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
-                <AlertCircle size={14} className="shrink-0" />
-                {error}
-              </div>
-            )}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs"
+                >
+                  <AlertCircle size={14} className="shrink-0" />
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Submit */}
             <button
@@ -144,7 +164,7 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

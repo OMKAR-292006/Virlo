@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { 
   Home, 
   Megaphone, 
@@ -81,21 +82,27 @@ export default function Dashboard() {
         </div>
 
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {navItems.map((item) => (
-            <Link
+          {navItems.map((item, idx) => (
+            <motion.div
               key={item.name}
-              href={item.href}
-              onClick={() => setSidebarOpen(false)}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                ${pathname === item.href
-                  ? 'bg-white/10 text-white' 
-                  : 'text-neutral-400 hover:text-white hover:bg-white/5'}
-              `}
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.07, duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
             >
-              <item.icon size={18} />
-              {item.name}
-            </Link>
+              <Link
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                  ${pathname === item.href
+                    ? 'bg-white/10 text-white' 
+                    : 'text-neutral-400 hover:text-white hover:bg-white/5'}
+                `}
+              >
+                <item.icon size={18} />
+                {item.name}
+              </Link>
+            </motion.div>
           ))}
         </nav>
 
@@ -150,7 +157,12 @@ export default function Dashboard() {
           <div className="max-w-7xl mx-auto space-y-6">
             
             {/* Welcome Banner */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <motion.div
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+            >
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Welcome back, Omkar 👋</h1>
                 <p className="text-slate-500 mt-1 font-medium text-xs">Here's what your AI has been doing today.</p>
@@ -161,12 +173,16 @@ export default function Dashboard() {
                   Generate New Content
                 </button>
               </Link>
-            </div>
+            </motion.div>
 
             {/* Analytics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+              initial="hidden"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+            >
               {kpis.map((kpi, i) => {
-                // Map the classes to premium light theme classes
                 const lightIconColorClass = kpi.iconColorClass
                   .replace('text-blue-400', 'text-blue-600')
                   .replace('text-emerald-400', 'text-emerald-600')
@@ -178,19 +194,28 @@ export default function Dashboard() {
                   .replace('bg-purple-400/10', 'bg-purple-50 border border-purple-100')
                   .replace('bg-amber-400/10', 'bg-amber-50 border border-amber-100');
                 return (
-                  <KpiCard 
-                    key={i} 
-                    {...kpi} 
-                    iconColorClass={lightIconColorClass}
-                    iconBgClass={lightIconBgClass}
-                    light={true} 
-                  />
+                  <motion.div
+                    key={i}
+                    variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } } }}
+                  >
+                    <KpiCard 
+                      {...kpi} 
+                      iconColorClass={lightIconColorClass}
+                      iconBgClass={lightIconBgClass}
+                      light={true} 
+                    />
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
               
               {/* Chart & AI Recommendations (Left/Middle Column) */}
               <div className="lg:col-span-2 space-y-6">
@@ -275,10 +300,15 @@ export default function Dashboard() {
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Recent Campaigns Table */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+            <motion.div
+              className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/80 shadow-sm overflow-hidden"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.55, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Recent Campaigns</h2>
                 <button className="text-xs text-slate-500 hover:text-slate-900 font-semibold flex items-center gap-1 transition-colors">
@@ -328,7 +358,7 @@ export default function Dashboard() {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>

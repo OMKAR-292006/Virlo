@@ -430,12 +430,19 @@ export default function ContentPlanner() {
           </div>
 
           {/* Calendar Horizontal Sliding Columns Container */}
-          <div 
+          <motion.div 
             className="flex-1 flex gap-5 overflow-x-auto pb-6 pt-1 items-stretch snap-x snap-mandatory scroll-smooth no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            initial="hidden"
+            animate="visible"
+            variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
           >
             {calendarData.map((dayPlan, i) => (
-              <div key={i} className="w-[280px] sm:w-[290px] shrink-0 flex flex-col h-full snap-start select-none">
+              <motion.div
+                key={i}
+                className="w-[280px] sm:w-[290px] shrink-0 flex flex-col h-full snap-start select-none"
+                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } } }}
+              >
                 
                 {/* Day Header */}
                 <div className="text-sm font-bold text-slate-900 mb-3.5 flex items-baseline gap-1">
@@ -513,9 +520,9 @@ export default function ContentPlanner() {
                   })}
 
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
         </div>
       </main>

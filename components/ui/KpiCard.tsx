@@ -1,5 +1,6 @@
 import React from 'react';
 import { ArrowUpRight, ArrowDownRight, LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export interface KpiCardProps {
   title: string;
@@ -15,7 +16,11 @@ export interface KpiCardProps {
 export function KpiCard({ title, value, change, isPositive, icon: Icon, iconColorClass, iconBgClass, light }: KpiCardProps) {
   if (light) {
     return (
-      <div className="bg-white border border-slate-200/80 shadow-sm p-5 rounded-[22px] hover:shadow-md transition-all duration-300 group cursor-default">
+      <motion.div
+        whileHover={{ y: -3, scale: 1.02 }}
+        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+        className="bg-white border border-slate-200/80 shadow-sm p-5 rounded-[22px] hover:shadow-md transition-shadow duration-300 group cursor-default"
+      >
         <div className="flex justify-between items-start mb-4">
           <div className={`p-2.5 rounded-xl ${iconBgClass}`}>
             <Icon size={18} className={iconColorClass} />
@@ -26,15 +31,19 @@ export function KpiCard({ title, value, change, isPositive, icon: Icon, iconColo
           </div>
         </div>
         <h3 className="text-slate-500 text-xs font-semibold mb-1">{title}</h3>
-        <p className="text-2xl font-black text-slate-800 group-hover:scale-[1.02] transform origin-left transition-transform duration-300">
+        <p className="text-2xl font-black text-slate-800">
           {value}
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] p-5 rounded-2xl hover:border-white/[0.15] hover:shadow-xl hover:shadow-black transition-all duration-300 group cursor-default">
+    <motion.div
+      whileHover={{ y: -3, scale: 1.02 }}
+      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+      className="bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] p-5 rounded-2xl hover:border-white/[0.15] hover:shadow-xl hover:shadow-black transition-shadow duration-300 group cursor-default"
+    >
       <div className="flex justify-between items-start mb-4">
         <div className={`p-2 rounded-xl ${iconBgClass}`}>
           <Icon size={20} className={iconColorClass} />
@@ -45,9 +54,9 @@ export function KpiCard({ title, value, change, isPositive, icon: Icon, iconColo
         </div>
       </div>
       <h3 className="text-neutral-400 text-sm font-medium mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-white group-hover:scale-[1.02] transform origin-left transition-transform duration-300">
+      <p className="text-2xl font-bold text-white">
         {value}
       </p>
-    </div>
+    </motion.div>
   );
 }

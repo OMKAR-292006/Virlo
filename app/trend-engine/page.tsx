@@ -62,7 +62,12 @@ export default function TrendEngine() {
 
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         {/* Header & Settings */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <motion.div
+          className="flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
+        >
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-white/10">
               <TrendingUp size={24} className="text-white" />
@@ -83,7 +88,7 @@ export default function TrendEngine() {
               <input value={industry} onChange={e => setIndustry(e.target.value)} className={inputClass} placeholder="Industry" />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
           {/* Festival List */}
@@ -91,13 +96,22 @@ export default function TrendEngine() {
             <h2 className="text-lg font-bold mb-6 flex items-center gap-2 text-neutral-300">
               <CalendarHeart size={18} /> Upcoming Events
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3"
+              initial="hidden"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } }}
+            >
               {UPCOMING_FESTIVALS.map((festival) => {
                 const days = daysRemaining[festival.id];
                 const isUrgent = days <= 14 && days > 0;
                 const isSelected = selectedFestival?.id === festival.id;
                 return (
-                  <div key={festival.id} className={`relative overflow-hidden p-5 rounded-2xl transition-all duration-300 border shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] ${isSelected ? 'bg-[#0f0f0f] border-white/[0.25]' : 'bg-[#0a0a0a] border-white/[0.08] hover:border-white/[0.15]'}`}>
+                  <motion.div
+                    key={festival.id}
+                    variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.4, 0, 0.2, 1] } } }}
+                    className={`relative overflow-hidden p-5 rounded-2xl transition-all duration-300 border shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] ${isSelected ? 'bg-[#0f0f0f] border-white/[0.25]' : 'bg-[#0a0a0a] border-white/[0.08] hover:border-white/[0.15]'}`}
+                  >
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <span className="inline-block px-2.5 py-1 bg-[#111] text-[10px] font-bold uppercase tracking-widest rounded mb-2 text-neutral-400 border border-white/[0.08]">
@@ -115,10 +129,10 @@ export default function TrendEngine() {
                     <button onClick={() => handleGenerateCampaign(festival)} disabled={loading && isSelected} className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${isSelected ? 'bg-white text-black' : 'bg-[#111] border border-white/[0.08] text-white hover:bg-[#1a1a1a]'}`}>
                       {loading && isSelected ? (<><Sparkles className="animate-spin" size={16} /> Generating...</>) : (<><Sparkles size={16} /> Generate Campaign</>)}
                     </button>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           </div>
 
           {/* AI Output */}

@@ -318,10 +318,13 @@ export default function CaptionGenerator() {
               </div>
 
               {/* Red Magic Generate Button with glow */}
-              <button
+              <motion.button
                 onClick={handleGenerate}
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-[#ff2d3a] hover:bg-[#e6222e] disabled:bg-slate-300 disabled:text-slate-500 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(255,45,58,0.25)]"
+                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.15 }}
+                className="w-full py-3 rounded-xl bg-[#ff2d3a] hover:bg-[#e6222e] disabled:bg-slate-300 disabled:text-slate-500 text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(255,45,58,0.25)]"
               >
                 {loading ? (
                   <>
@@ -334,7 +337,7 @@ export default function CaptionGenerator() {
                     Magic Generate
                   </>
                 )}
-              </button>
+              </motion.button>
 
             </div>
 

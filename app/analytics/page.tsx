@@ -13,6 +13,7 @@ import { KpiCard } from '@/components/ui/KpiCard';
 import { EngagementChart } from '@/components/charts/EngagementChart';
 import { DemographicsChart } from '@/components/charts/DemographicsChart';
 import { CampaignPerformanceChart } from '@/components/charts/CampaignPerformanceChart';
+import { motion } from 'framer-motion';
 
 const navItems = [
   { name: 'Dashboard', icon: Home, href: '/dashboard' },
@@ -211,14 +212,29 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
+              initial="hidden"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
+            >
               {currentData.kpis.map((kpi, i) => (
-                <KpiCard key={`${timeRange}-${i}`} {...kpi} light={true} />
+                <motion.div
+                  key={`${timeRange}-${i}`}
+                  variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } } }}
+                >
+                  <KpiCard {...kpi} light={true} />
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
               <div className="lg:col-span-2">
                 <EngagementChart data={currentData.performanceData} light={true} />
               </div>
@@ -228,7 +244,7 @@ export default function AnalyticsDashboard() {
               <div className="lg:col-span-3">
                 <CampaignPerformanceChart data={currentData.campaignData} light={true} />
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>

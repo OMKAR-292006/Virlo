@@ -210,12 +210,19 @@ function DemoModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+import { motion } from 'framer-motion';
+import { FadeIn, SlideUp, ScaleIn } from '@/components/animation/AnimatedWrappers';
+
 export default function LandingPage() {
   const [showDemo, setShowDemo] = useState(false);
 
   return (
-    <div className="min-h-screen bg-black text-neutral-50 font-sans selection:bg-white/10 antialiased">
-      
+    <motion.div
+      className="min-h-screen bg-black text-neutral-50 font-sans selection:bg-white/10 antialiased"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
+    >      
       {showDemo && <DemoModal onClose={() => setShowDemo(false)} />}
 
       {/* Background */}
@@ -254,7 +261,7 @@ export default function LandingPage() {
 
       <main className="relative z-10 pt-28">
         {/* Hero */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 pb-28">
+        <SlideUp><section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 pb-28">
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05] mb-7 text-white">
             AI-Powered Marketing<br />
@@ -266,10 +273,10 @@ export default function LandingPage() {
             Stop doing manual work. Start scaling with intelligence.
           </p>
 
-        </section>
+        </section></SlideUp>
 
         {/* Stats */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <ScaleIn><section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]">
             {[
               { icon: Zap, stat: '10x', label: 'Faster Campaign Creation' },
@@ -285,7 +292,7 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-        </section>
+        </section></ScaleIn>
 
         {/* Features */}
         <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -302,7 +309,7 @@ export default function LandingPage() {
               { icon: TrendingUp, title: 'Festival & Trend Engine', desc: 'Never miss a cultural moment. Our AI predicts viral trends and generates topical campaigns for your brand automatically.', href: '/trend-engine' },
               { icon: Megaphone, title: 'Ad Optimization', desc: 'Continuous A/B testing powered by machine learning. Let the AI find the perfect copy and creative combinations that convert.', href: '/analytics' },
             ].map(({ icon: Icon, title, desc, href }, i) => (
-              <Link key={i} href={href}>
+              <FadeIn key={i}><Link href={href}>
                 <div className="group h-full p-8 rounded-3xl bg-[#0a0a0a] border border-white/[0.08] hover:border-white/[0.18] transition-all duration-300 relative overflow-hidden cursor-pointer shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
                   <div className="w-11 h-11 rounded-xl bg-[#111] border border-white/[0.08] flex items-center justify-center mb-6 group-hover:bg-[#161616] transition-colors">
                     <Icon size={22} className="text-neutral-400 group-hover:text-neutral-200 transition-colors" />
@@ -313,13 +320,13 @@ export default function LandingPage() {
                     Learn more <ArrowUpRight size={14} />
                   </div>
                 </div>
-              </Link>
+              </Link></FadeIn>
             ))}
           </div>
         </section>
 
         {/* CTA Banner */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <FadeIn><section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
           <div className="relative bg-[#0a0a0a] border border-white/[0.08] rounded-3xl p-12 text-center overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to grow smarter?</h2>
@@ -330,7 +337,7 @@ export default function LandingPage() {
               </button>
             </Link>
           </div>
-        </section>
+        </section></FadeIn>
       </main>
 
       {/* Footer */}

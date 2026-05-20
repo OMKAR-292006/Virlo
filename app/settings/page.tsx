@@ -8,6 +8,7 @@ import {
   Sparkles, User, Bell, Menu, X, ChevronRight, Check,
   Search, Eye, EyeOff, Pencil, CreditCard
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const navItems = [
   { name: 'Dashboard', icon: Home, href: '/dashboard' },
@@ -93,13 +94,22 @@ export default function SettingsPage() {
           <div className="max-w-5xl mx-auto space-y-6">
             
             {/* Page Header */}
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            >
               <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Personal Profile</h1>
               <p className="text-slate-500 text-xs font-semibold mt-1">Manage your account settings, billing, and notifications.</p>
-            </div>
+            </motion.div>
 
             {/* Profile Information Card */}
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+            <motion.div
+              className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
               <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider pb-3 border-b border-slate-100">Profile Information</h2>
               
               <div className="flex flex-col md:flex-row gap-8">
@@ -178,10 +188,15 @@ export default function SettingsPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Billing & Plan Card */}
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+            <motion.div
+              className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
               <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider pb-3 border-b border-slate-100">Billing & Plan</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -274,10 +289,15 @@ export default function SettingsPage() {
                   </table>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Notification Preferences Card */}
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+            <motion.div
+              className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
               <div>
                 <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Notification Preferences</h2>
                 <p className="text-slate-500 text-xs font-semibold mt-1">Choose what updates you want to receive.</p>
@@ -289,16 +309,22 @@ export default function SettingsPage() {
                   { label: "Approval Reminders", desc: "Push notifications when new AI content needs your review.", defaultOn: false },
                   { label: "Billing Alerts", desc: "Get notified about upcoming payments or failed transactions.", defaultOn: true }
                 ].map((pref, i) => (
-                  <div key={i} className="bg-[#faf8f6] border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                  <motion.div
+                    key={i}
+                    className="bg-[#faf8f6] border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm"
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.35 + i * 0.08, duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+                  >
                     <div className="pr-4">
                       <h4 className="text-xs font-bold text-slate-800">{pref.label}</h4>
                       <p className="text-[11px] text-slate-400 font-semibold mt-0.5">{pref.desc}</p>
                     </div>
                     <Toggle defaultOn={pref.defaultOn} />
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
