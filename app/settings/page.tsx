@@ -1,0 +1,308 @@
+"use client";
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  Home, Megaphone, CalendarDays, BarChart2, Settings,
+  Sparkles, User, Bell, Menu, X, ChevronRight, Check,
+  Search, Eye, EyeOff, Pencil, CreditCard
+} from 'lucide-react';
+
+const navItems = [
+  { name: 'Dashboard', icon: Home, href: '/dashboard' },
+  { name: 'Campaigns', icon: Megaphone, href: '/caption-generator' },
+  { name: 'AI Planner', icon: CalendarDays, href: '/content-planner' },
+  { name: 'Analytics', icon: BarChart2, href: '/analytics' },
+  { name: 'Settings', icon: Settings, href: '/settings' },
+];
+
+function Toggle({ defaultOn = false }: { defaultOn?: boolean }) {
+  const [on, setOn] = useState(defaultOn);
+  return (
+    <button
+      type="button"
+      onClick={() => setOn(!on)}
+      className={`relative w-12 h-6 rounded-full transition-colors flex items-center shrink-0 ${on ? 'bg-[#00c592]' : 'bg-slate-200'}`}
+    >
+      <div className={`w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center transition-all absolute ${on ? 'left-[25px]' : 'left-[3px]'}`}>
+        {on && <Check size={12} className="text-[#00c592] stroke-[3]" />}
+      </div>
+    </button>
+  );
+}
+
+export default function SettingsPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const pathname = usePathname();
+
+  const handleSave = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f6f2ee] text-slate-800 font-sans flex overflow-hidden selection:bg-black/10">
+      {/* Sidebar Mobile Overlay */}
+      {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />}
+
+      {/* Sidebar */}
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#050505] border-r border-white/[0.08] transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
+        <div className="h-16 flex items-center px-6 border-b border-white/[0.08]">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-white/10 text-white"><Sparkles size={18} /></div>
+            <span className="font-bold text-xl tracking-tight text-white">Brand Matic</span>
+          </div>
+          <button className="ml-auto lg:hidden text-neutral-400 hover:text-white" onClick={() => setSidebarOpen(false)}><X size={20}/></button>
+        </div>
+        <nav className="flex-1 px-4 py-6 space-y-1">
+          {navItems.map((item) => (
+            <Link key={item.name} href={item.href} onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === item.href ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <item.icon size={18} />{item.name}
+            </Link>
+          ))}
+        </nav>
+        <div className="p-4 border-t border-white/[0.08]">
+          <div className="p-4 rounded-xl bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+            <div className="flex items-center gap-2 text-white mb-2">
+              <Sparkles size={16} />
+              <span className="text-sm font-semibold">Pro Plan Active</span>
+            </div>
+            <p className="text-xs text-neutral-400 mb-3">You have 12,400 AI credits remaining this month.</p>
+            <button className="w-full py-2 px-4 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors text-white border border-white/10">Upgrade</button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-w-0 z-10 h-screen overflow-hidden relative">
+        {/* Floating Menu Button for Mobile */}
+        <button 
+          className="lg:hidden absolute top-4 left-4 z-30 p-2.5 bg-white border border-slate-200 rounded-full shadow-sm text-slate-600 hover:text-slate-900 transition-all active:scale-95"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <Menu size={20} />
+        </button>
+
+        {/* Settings Content */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-16 sm:pt-20 lg:pt-8">
+          <div className="max-w-5xl mx-auto space-y-6">
+            
+            {/* Page Header */}
+            <div>
+              <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Personal Profile</h1>
+              <p className="text-slate-500 text-xs font-semibold mt-1">Manage your account settings, billing, and notifications.</p>
+            </div>
+
+            {/* Profile Information Card */}
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider pb-3 border-b border-slate-100">Profile Information</h2>
+              
+              <div className="flex flex-col md:flex-row gap-8">
+                {/* Avatar Column */}
+                <div className="flex flex-col items-center shrink-0 space-y-2">
+                  <div className="relative">
+                    <img 
+                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" 
+                      alt="Avatar" 
+                      className="w-20 h-20 rounded-full object-cover border border-slate-200"
+                    />
+                    <button className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#e52521] hover:bg-[#c81916] text-white flex items-center justify-center border-2 border-white shadow-sm cursor-pointer transition-colors">
+                      <Pencil size={12} className="stroke-[2.5]" />
+                    </button>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-semibold max-w-[120px] text-center leading-normal">
+                    JPG, GIF or PNG, Max 2MB.
+                  </span>
+                </div>
+
+                {/* Form Column */}
+                <div className="flex-1 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">First Name</label>
+                      <input 
+                        type="text" 
+                        defaultValue="Sarah" 
+                        className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Last Name</label>
+                      <input 
+                        type="text" 
+                        defaultValue="Jenkins" 
+                        className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+                    <input 
+                      type="email" 
+                      defaultValue="sarah.j@friendlyagency.co" 
+                      className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Change Password</label>
+                    <div className="relative">
+                      <input 
+                        type={showPassword ? "text" : "password"} 
+                        defaultValue="sarahpass123" 
+                        className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400 pr-10"
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-2">
+                    <button 
+                      onClick={handleSave}
+                      className="px-6 py-2 bg-[#e52521] hover:bg-[#c81916] text-white text-xs font-bold rounded-xl transition-colors shadow-sm"
+                    >
+                      {saved ? 'Saved!' : 'Save Changes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Billing & Plan Card */}
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider pb-3 border-b border-slate-100">Billing & Plan</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Growth Plan Box */}
+                <div className="bg-[#faf8f6] border border-slate-200 rounded-2xl p-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-slate-800">Growth Plan</span>
+                    <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-100 uppercase tracking-wider">
+                      Active
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
+                    Perfect for small businesses scaling their marketing.
+                  </p>
+                  <div>
+                    <span className="text-2xl font-extrabold text-slate-800">$49</span>
+                    <span className="text-slate-400 text-xs font-bold"> /mo</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-semibold">
+                    Next billing date: Oct 15, 2023
+                  </p>
+                  <div className="flex gap-3 pt-2">
+                    <button className="flex-1 bg-white border border-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition-colors">
+                      Cancel
+                    </button>
+                    <button className="flex-1 bg-[#231f20] hover:bg-[#1a1718] text-white text-xs font-bold py-2 rounded-xl transition-colors">
+                      Upgrade
+                    </button>
+                  </div>
+                </div>
+
+                {/* Payment Method Box */}
+                <div className="bg-[#faf8f6] border border-slate-200 rounded-2xl p-5 space-y-4 flex flex-col">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-slate-800">Payment Method</span>
+                    <CreditCard size={16} className="text-slate-400" />
+                  </div>
+                  <div className="bg-white border border-slate-100 rounded-xl p-3 flex items-center gap-3 shadow-sm mt-2">
+                    <div className="px-2 py-1 bg-blue-50 text-blue-600 text-[9px] font-extrabold rounded-md border border-blue-100">
+                      VISA
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">Visa ending in 1234</p>
+                      <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Expires 12/25</p>
+                    </div>
+                  </div>
+                  <div className="mt-auto pt-4">
+                    <button className="w-full bg-white border border-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition-colors">
+                      Update Payment Method
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Invoice History Sub-section */}
+              <div className="space-y-3 pt-2">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Invoice History</h3>
+                
+                <div className="overflow-hidden border border-slate-200 rounded-2xl bg-white">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#faf8f6] border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                        <th className="px-4 py-3">Date</th>
+                        <th className="px-4 py-3">Amount</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3 text-right">Invoice</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-xs">
+                      {[
+                        { date: "Sep 15, 2023", amount: "$49.00", status: "Paid" },
+                        { date: "Aug 15, 2023", amount: "$49.00", status: "Paid" },
+                        { date: "Jul 15, 2023", amount: "$49.00", status: "Paid" },
+                      ].map((invoice, i) => (
+                        <tr key={i} className="hover:bg-[#faf8f6] transition-colors">
+                          <td className="px-4 py-3 text-slate-500 font-semibold">{invoice.date}</td>
+                          <td className="px-4 py-3 text-slate-800 font-bold">{invoice.amount}</td>
+                          <td className="px-4 py-3">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                              {invoice.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            {/* Empty as in reference or can have a small download link */}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Notification Preferences Card */}
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+              <div>
+                <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Notification Preferences</h2>
+                <p className="text-slate-500 text-xs font-semibold mt-1">Choose what updates you want to receive.</p>
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  { label: "Weekly Marketing Summary", desc: "Receive an email digest of your upcoming content calendar.", defaultOn: true },
+                  { label: "Approval Reminders", desc: "Push notifications when new AI content needs your review.", defaultOn: false },
+                  { label: "Billing Alerts", desc: "Get notified about upcoming payments or failed transactions.", defaultOn: true }
+                ].map((pref, i) => (
+                  <div key={i} className="bg-[#faf8f6] border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                    <div className="pr-4">
+                      <h4 className="text-xs font-bold text-slate-800">{pref.label}</h4>
+                      <p className="text-[11px] text-slate-400 font-semibold mt-0.5">{pref.desc}</p>
+                    </div>
+                    <Toggle defaultOn={pref.defaultOn} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}

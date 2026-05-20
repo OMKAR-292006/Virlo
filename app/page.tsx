@@ -1,0 +1,363 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { 
+  Sparkles, CalendarDays, TrendingUp, Megaphone,
+  Zap, TrendingDown, Clock, ChevronRight, Menu, ArrowUpRight,
+  X, Lock, CheckCircle2
+} from 'lucide-react';
+
+function DemoModal({ onClose }: { onClose: () => void }) {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'planner' | 'caption' | 'trends' | 'analytics'>('dashboard');
+
+  const tabs = [
+    { id: 'dashboard' as const, label: 'Dashboard', icon: Sparkles },
+    { id: 'planner' as const, label: 'AI Planner', icon: CalendarDays },
+    { id: 'caption' as const, label: 'Caption Studio', icon: Megaphone },
+    { id: 'trends' as const, label: 'Trend Engine', icon: TrendingUp },
+    { id: 'analytics' as const, label: 'Analytics', icon: Zap },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={onClose}>
+      <div
+        className="relative w-full max-w-4xl bg-[#0a0a0a] border border-white/[0.08] rounded-3xl shadow-[0_30px_60px_rgba(0,0,0,0.8),inset_0_1px_0_0_rgba(255,255,255,0.05)] overflow-hidden flex flex-col h-[85vh] max-h-[640px]"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-black">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} className="text-white" />
+            <span className="text-sm font-semibold text-white">Brand Matic Live Platform Preview</span>
+          </div>
+          <button onClick={onClose} className="text-neutral-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/5">
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="flex border-b border-white/[0.08] bg-[#050505] p-2 gap-1 overflow-x-auto scrollbar-none">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg transition-all whitespace-nowrap ${
+                  active 
+                    ? 'bg-white/10 text-white shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]' 
+                    : 'text-neutral-500 hover:text-neutral-300'
+                }`}
+              >
+                <Icon size={14} />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Preview Container */}
+        <div className="flex-1 overflow-hidden relative bg-black p-6">
+          <div className="h-full w-full opacity-60 pointer-events-none select-none overflow-y-auto scrollbar-none pb-20">
+            {/* Dashboard Preview */}
+            {activeTab === 'dashboard' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
+                  <div>
+                    <div className="h-5 w-40 bg-neutral-800 rounded-md mb-2" />
+                    <div className="h-3.5 w-60 bg-neutral-900 rounded-md" />
+                  </div>
+                  <div className="h-8 w-32 bg-neutral-800 rounded-lg" />
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="border border-white/[0.06] bg-[#0a0a0a] p-4 rounded-xl space-y-3">
+                      <div className="h-3 w-16 bg-neutral-800 rounded" />
+                      <div className="h-6 w-24 bg-neutral-700 rounded-md" />
+                    </div>
+                  ))}
+                </div>
+                <div className="border border-white/[0.06] bg-[#0a0a0a] rounded-xl p-4 space-y-4">
+                  <div className="h-4 w-32 bg-neutral-800 rounded" />
+                  <div className="space-y-2">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="flex justify-between items-center py-2 border-b border-neutral-900 last:border-0">
+                        <div className="h-3 w-40 bg-neutral-900 rounded" />
+                        <div className="h-3 w-12 bg-neutral-900 rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* AI Planner Preview */}
+            {activeTab === 'planner' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center border-b border-white/[0.06] pb-4">
+                  <div className="h-5 w-48 bg-neutral-800 rounded-md" />
+                  <div className="h-8 w-24 bg-neutral-800 rounded-lg" />
+                </div>
+                <div className="grid grid-cols-7 gap-2">
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, i) => (
+                    <div key={i} className="border border-white/[0.06] bg-[#0a0a0a] p-3 rounded-xl min-h-[160px] flex flex-col justify-between">
+                      <div>
+                        <span className="text-[10px] font-bold text-neutral-500 uppercase">{day}</span>
+                        <div className="h-2.5 w-full bg-neutral-800 rounded mt-2" />
+                        <div className="h-2 w-4/5 bg-neutral-900 rounded mt-1" />
+                      </div>
+                      <div className="h-4 w-12 bg-neutral-900 rounded-md" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Caption Studio Preview */}
+            {activeTab === 'caption' && (
+              <div className="grid grid-cols-5 gap-6 h-full">
+                <div className="col-span-2 border-r border-white/[0.06] pr-6 space-y-4">
+                  <div className="h-4 w-28 bg-neutral-800 rounded" />
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="space-y-1.5">
+                        <div className="h-2.5 w-16 bg-neutral-900 rounded" />
+                        <div className="h-9 w-full bg-neutral-950 border border-white/[0.05] rounded-lg" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="h-9 w-full bg-neutral-800 rounded-lg" />
+                </div>
+                <div className="col-span-3 space-y-4">
+                  <div className="h-4 w-32 bg-neutral-800 rounded" />
+                  <div className="border border-white/[0.06] bg-[#0a0a0a] p-4 rounded-xl space-y-3">
+                    <div className="h-3 w-16 bg-neutral-800 rounded" />
+                    <div className="space-y-1.5">
+                      <div className="h-2.5 w-full bg-neutral-900 rounded" />
+                      <div className="h-2.5 w-5/6 bg-neutral-900 rounded" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Trend Engine Preview */}
+            {activeTab === 'trends' && (
+              <div className="space-y-6">
+                <div className="h-5 w-52 bg-neutral-800 rounded-md border-b border-white/[0.06] pb-4 w-full" />
+                <div className="grid grid-cols-2 gap-4">
+                  {[1, 2].map(i => (
+                    <div key={i} className="border border-white/[0.06] bg-[#0a0a0a] p-4 rounded-xl space-y-4">
+                      <div className="flex justify-between items-center">
+                        <div className="h-4 w-32 bg-neutral-800 rounded" />
+                        <div className="h-5 w-16 bg-neutral-900 rounded-full" />
+                      </div>
+                      <div className="h-10 w-full bg-neutral-950 border border-white/[0.05] rounded-lg" />
+                      <div className="h-6 w-20 bg-neutral-900 rounded-md" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Analytics Preview */}
+            {activeTab === 'analytics' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-4 gap-4">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="border border-white/[0.06] bg-[#0a0a0a] p-3 rounded-xl space-y-2">
+                      <div className="h-3 w-12 bg-neutral-800 rounded" />
+                      <div className="h-5 w-16 bg-neutral-700 rounded" />
+                    </div>
+                  ))}
+                </div>
+                <div className="border border-white/[0.06] bg-[#0a0a0a] rounded-xl p-6 h-48 flex items-end gap-2">
+                  {[40, 60, 45, 90, 75, 50, 80, 65, 95, 70].map((h, i) => (
+                    <div key={i} className="flex-1 bg-neutral-800 rounded-t" style={{ height: `${h}%` }} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Gated Overlay Sign In Wall */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/40 flex flex-col items-center justify-center p-6 text-center">
+            <div className="p-3 rounded-full bg-white/5 border border-white/[0.08] mb-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+              <Lock size={20} className="text-white" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-2">Access Gated Preview</h3>
+            <p className="text-xs text-neutral-500 max-w-sm mb-6 leading-relaxed">
+              Log in to view live metric streams, generate unlimited campaigns, schedule weekly calendars, and query the Trend Engine.
+            </p>
+            <div className="flex gap-3">
+              <Link href="/login">
+                <button className="px-6 py-2.5 text-xs font-semibold bg-white text-black rounded-xl hover:bg-neutral-100 transition-colors shadow-[0_0_10px_rgba(255,255,255,0.1)]">
+                  Log in for Full Details
+                </button>
+              </Link>
+              <Link href="/onboarding">
+                <button className="px-6 py-2.5 text-xs font-semibold bg-[#111] border border-white/[0.08] hover:border-white/[0.18] text-white rounded-xl transition-colors">
+                  Create Free Account
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function LandingPage() {
+  const [showDemo, setShowDemo] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-black text-neutral-50 font-sans selection:bg-white/10 antialiased">
+      
+      {showDemo && <DemoModal onClose={() => setShowDemo(false)} />}
+
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 bg-black">
+        <div className="absolute top-0 left-0 right-0 h-[600px] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.09),transparent)]" />
+      </div>
+
+      {/* Navbar */}
+      <nav className="fixed top-0 w-full z-40 border-b border-white/[0.06] bg-black/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer group">
+            <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
+              <Sparkles size={18} className="text-white" />
+            </div>
+            <span className="font-bold text-lg tracking-tight text-white">Brand Matic</span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-400">
+            <Link href="#features" className="hover:text-white transition-colors">Features</Link>
+          </div>
+
+          <div className="hidden md:flex items-center gap-4">
+            <Link href="/login" className="text-sm font-medium text-neutral-400 hover:text-white transition-colors">Log in</Link>
+            <Link href="/onboarding">
+              <button className="px-4 py-1.5 text-sm font-semibold rounded-full bg-white text-black hover:bg-neutral-200 transition-colors shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)]">
+                Get Started
+              </button>
+            </Link>
+          </div>
+          
+          <button className="md:hidden p-2 text-neutral-400 hover:text-white">
+            <Menu size={22} />
+          </button>
+        </div>
+      </nav>
+
+      <main className="relative z-10 pt-28">
+        {/* Hero */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20 pb-28">
+
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.05] mb-7 text-white">
+            AI-Powered Marketing<br />
+            <span className="text-neutral-400">Operating System</span>
+          </h1>
+
+          <p className="max-w-xl mx-auto text-base md:text-lg text-neutral-500 mb-10 leading-relaxed">
+            AI generates content, campaigns, captions, ads, and automates growth for businesses. 
+            Stop doing manual work. Start scaling with intelligence.
+          </p>
+
+        </section>
+
+        {/* Stats */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden border border-white/[0.06] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]">
+            {[
+              { icon: Zap, stat: '10x', label: 'Faster Campaign Creation' },
+              { icon: TrendingDown, stat: '70%', label: 'Lower Marketing Costs' },
+              { icon: Clock, stat: '24/7', label: 'AI Automation' },
+            ].map(({ icon: Icon, stat, label }, i) => (
+              <div key={i} className="flex flex-col items-center justify-center space-y-3 py-12 bg-[#080808] hover:bg-[#0d0d0d] transition-colors">
+                <div className="p-2.5 rounded-xl bg-[#111] border border-white/[0.08]">
+                  <Icon size={20} className="text-neutral-400" />
+                </div>
+                <h3 className="text-3xl font-bold text-white">{stat}</h3>
+                <p className="text-neutral-500 text-sm font-medium">{label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Features */}
+        <section id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="text-center mb-16">
+            <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-4">Platform</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Everything you need to grow</h2>
+            <p className="text-neutral-500 max-w-xl mx-auto text-sm leading-relaxed">
+              Our operating system replaces your entire marketing stack with a single, intelligent platform.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { icon: CalendarDays, title: 'AI Content Planner', desc: 'Automatically schedule and generate high-converting content across all your social channels for the entire month in minutes.', href: '/content-planner' },
+              { icon: TrendingUp, title: 'Festival & Trend Engine', desc: 'Never miss a cultural moment. Our AI predicts viral trends and generates topical campaigns for your brand automatically.', href: '/trend-engine' },
+              { icon: Megaphone, title: 'Ad Optimization', desc: 'Continuous A/B testing powered by machine learning. Let the AI find the perfect copy and creative combinations that convert.', href: '/analytics' },
+            ].map(({ icon: Icon, title, desc, href }, i) => (
+              <Link key={i} href={href}>
+                <div className="group h-full p-8 rounded-3xl bg-[#0a0a0a] border border-white/[0.08] hover:border-white/[0.18] transition-all duration-300 relative overflow-hidden cursor-pointer shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+                  <div className="w-11 h-11 rounded-xl bg-[#111] border border-white/[0.08] flex items-center justify-center mb-6 group-hover:bg-[#161616] transition-colors">
+                    <Icon size={22} className="text-neutral-400 group-hover:text-neutral-200 transition-colors" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white mb-3">{title}</h3>
+                  <p className="text-neutral-500 leading-relaxed text-sm">{desc}</p>
+                  <div className="mt-6 flex items-center gap-1 text-neutral-600 group-hover:text-neutral-300 transition-colors text-xs font-semibold">
+                    Learn more <ArrowUpRight size={14} />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Banner */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          <div className="relative bg-[#0a0a0a] border border-white/[0.08] rounded-3xl p-12 text-center overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to grow smarter?</h2>
+            <p className="text-neutral-500 mb-8 max-w-md mx-auto text-sm">Join thousands of businesses already automating their marketing with Brand Matic AI.</p>
+            <Link href="/onboarding">
+              <button className="px-8 py-3.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-neutral-100 transition-colors">
+                Start for free →
+              </button>
+            </Link>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/[0.06] bg-black py-10 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-white/10">
+              <Sparkles size={16} className="text-white" />
+            </div>
+            <span className="font-semibold text-white">Brand Matic</span>
+          </div>
+          <p className="text-neutral-600 text-sm">© {new Date().getFullYear()} Brand Matic Inc. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            {[
+              { label: 'Twitter', path: 'M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z' },
+              { label: 'GitHub', path: 'M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4' },
+            ].map(({ label, path }) => (
+              <Link key={label} href="#" className="text-neutral-600 hover:text-neutral-300 transition-colors">
+                <span className="sr-only">{label}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d={path} />
+                </svg>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

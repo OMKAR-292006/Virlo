@@ -1,0 +1,238 @@
+"use client";
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { 
+  Home, Megaphone, CalendarDays, BarChart2, Settings, Sparkles,
+  TrendingUp, Users, MousePointerClick, DollarSign, Activity,
+  Menu, X
+} from 'lucide-react';
+import { PIE_COLORS } from '@/lib/mock-data';
+import { KpiCard } from '@/components/ui/KpiCard';
+import { EngagementChart } from '@/components/charts/EngagementChart';
+import { DemographicsChart } from '@/components/charts/DemographicsChart';
+import { CampaignPerformanceChart } from '@/components/charts/CampaignPerformanceChart';
+
+const navItems = [
+  { name: 'Dashboard', icon: Home, href: '/dashboard' },
+  { name: 'Campaigns', icon: Megaphone, href: '/caption-generator' },
+  { name: 'AI Planner', icon: CalendarDays, href: '/content-planner' },
+  { name: 'Analytics', icon: BarChart2, href: '/analytics' },
+  { name: 'Settings', icon: Settings, href: '/settings' },
+];
+
+const dataSets = {
+  '7d': {
+    kpis: [
+      { title: "Click-Through Rate", value: "4.8%", change: "+1.2%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
+      { title: "Cost Per Click", value: "$0.84", change: "-$0.12", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "ROAS", value: "3.2x", change: "+0.4x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
+      { title: "New Followers", value: "12,490", change: "+2,100", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
+      { title: "Engagement Rate", value: "8.4%", change: "-0.5%", isPositive: false, icon: Activity, iconColorClass: "text-orange-500", iconBgClass: "bg-orange-50" },
+    ],
+    performanceData: [
+      { name: 'Mon', engagement: 4000, reach: 2400 },
+      { name: 'Tue', engagement: 3000, reach: 1398 },
+      { name: 'Wed', engagement: 2000, reach: 9800 },
+      { name: 'Thu', engagement: 2780, reach: 3908 },
+      { name: 'Fri', engagement: 1890, reach: 4800 },
+      { name: 'Sat', engagement: 2390, reach: 3800 },
+      { name: 'Sun', engagement: 3490, reach: 4300 },
+    ],
+    campaignData: [
+      { name: 'Instagram Ads', spend: 4000, revenue: 8400 },
+      { name: 'Google Search', spend: 3000, revenue: 7398 },
+      { name: 'TikTok Influencers', spend: 2000, revenue: 5800 },
+      { name: 'Email Marketing', spend: 1000, revenue: 3908 },
+    ],
+    demographicData: [
+      { name: '18-24', value: 400 },
+      { name: '25-34', value: 300 },
+      { name: '35-44', value: 300 },
+      { name: '45+', value: 200 },
+    ]
+  },
+  '30d': {
+    kpis: [
+      { title: "Click-Through Rate", value: "5.1%", change: "+1.8%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
+      { title: "Cost Per Click", value: "$0.78", change: "-$0.22", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "ROAS", value: "3.6x", change: "+0.8x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
+      { title: "New Followers", value: "48,290", change: "+8,400", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
+      { title: "Engagement Rate", value: "9.2%", change: "+1.1%", isPositive: true, icon: Activity, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+    ],
+    performanceData: [
+      { name: 'Wk 1', engagement: 14000, reach: 18000 },
+      { name: 'Wk 2', engagement: 18000, reach: 24000 },
+      { name: 'Wk 3', engagement: 19500, reach: 31000 },
+      { name: 'Wk 4', engagement: 22000, reach: 35000 },
+    ],
+    campaignData: [
+      { name: 'Instagram Ads', spend: 16400, revenue: 34440 },
+      { name: 'Google Search', spend: 12300, revenue: 30330 },
+      { name: 'TikTok Influencers', spend: 8200, revenue: 23780 },
+      { name: 'Email Marketing', spend: 4100, revenue: 16020 },
+    ],
+    demographicData: [
+      { name: '18-24', value: 1600 },
+      { name: '25-34', value: 1250 },
+      { name: '35-44', value: 1100 },
+      { name: '45+', value: 850 },
+    ]
+  },
+  'all': {
+    kpis: [
+      { title: "Click-Through Rate", value: "5.6%", change: "+2.1%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
+      { title: "Cost Per Click", value: "$0.72", change: "-$0.28", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "ROAS", value: "4.1x", change: "+1.2x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
+      { title: "New Followers", value: "245,800", change: "+42,000", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
+      { title: "Engagement Rate", value: "10.5%", change: "+2.4%", isPositive: true, icon: Activity, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+    ],
+    performanceData: [
+      { name: 'Jan', engagement: 45000, reach: 68000 },
+      { name: 'Feb', engagement: 52000, reach: 74000 },
+      { name: 'Mar', engagement: 61000, reach: 88000 },
+      { name: 'Apr', engagement: 58000, reach: 95000 },
+      { name: 'May', engagement: 72000, reach: 110000 },
+      { name: 'Jun', engagement: 85000, reach: 130000 },
+      { name: 'Jul', engagement: 94000, reach: 145000 },
+    ],
+    campaignData: [
+      { name: 'Instagram Ads', spend: 98000, revenue: 215000 },
+      { name: 'Google Search', spend: 75000, revenue: 185000 },
+      { name: 'TikTok Influencers', spend: 52000, revenue: 148000 },
+      { name: 'Email Marketing', spend: 28000, revenue: 95000 },
+    ],
+    demographicData: [
+      { name: '18-24', value: 8200 },
+      { name: '25-34', value: 6800 },
+      { name: '35-44', value: 5900 },
+      { name: '45+', value: 4100 },
+    ]
+  }
+};
+
+export default function AnalyticsDashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('7d');
+  const pathname = usePathname();
+
+  const currentData = dataSets[timeRange];
+
+  return (
+    <div className="min-h-screen bg-[#f6f2ee] text-slate-800 font-sans flex overflow-hidden selection:bg-black/10">
+      {/* Sidebar Mobile Overlay */}
+      {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />}
+
+      {/* Sidebar */}
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#050505] border-r border-white/[0.08] transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
+        <div className="h-16 flex items-center px-6 border-b border-white/[0.08]">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-white/10 text-white"><Sparkles size={18} /></div>
+            <span className="font-bold text-xl tracking-tight text-white">Brand Matic</span>
+          </div>
+          <button className="ml-auto lg:hidden text-neutral-400 hover:text-white" onClick={() => setSidebarOpen(false)}><X size={20}/></button>
+        </div>
+        <nav className="flex-1 px-4 py-6 space-y-1">
+          {navItems.map((item) => (
+            <Link key={item.name} href={item.href} onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === item.href ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
+            >
+              <item.icon size={18} />{item.name}
+            </Link>
+          ))}
+        </nav>
+        <div className="p-4 border-t border-white/[0.08]">
+          <div className="p-4 rounded-xl bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+            <div className="flex items-center gap-2 text-white mb-2">
+              <Sparkles size={16} />
+              <span className="text-sm font-semibold">Pro Plan Active</span>
+            </div>
+            <p className="text-xs text-neutral-400 mb-3">You have 12,400 AI credits remaining this month.</p>
+            <button className="w-full py-2 px-4 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors text-white border border-white/10">Upgrade</button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-w-0 z-10 h-screen overflow-hidden relative">
+        {/* Floating Menu Button for Mobile */}
+        <button 
+          className="lg:hidden absolute top-4 left-4 z-30 p-2.5 bg-white border border-slate-200 rounded-full shadow-sm text-slate-600 hover:text-slate-900 transition-all active:scale-95"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <Menu size={20} />
+        </button>
+
+        {/* Analytics Scrollable View */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-16 sm:pt-20 lg:pt-8">
+          <div className="max-w-5xl mx-auto space-y-6">
+            
+            {/* Header Title */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+                  <Activity size={24} className="text-[#050505]" /> Platform Analytics
+                </h1>
+                <p className="text-slate-500 text-xs font-semibold mt-1">Real-time performance metrics and AI insights</p>
+              </div>
+              <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm self-start sm:self-auto">
+                <button 
+                  onClick={() => setTimeRange('7d')}
+                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${
+                    timeRange === '7d' 
+                      ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' 
+                      : 'font-semibold text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  7 Days
+                </button>
+                <button 
+                  onClick={() => setTimeRange('30d')}
+                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${
+                    timeRange === '30d' 
+                      ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' 
+                      : 'font-semibold text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  30 Days
+                </button>
+                <button 
+                  onClick={() => setTimeRange('all')}
+                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${
+                    timeRange === 'all' 
+                      ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' 
+                      : 'font-semibold text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  All Time
+                </button>
+              </div>
+            </div>
+
+            {/* KPI Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {currentData.kpis.map((kpi, i) => (
+                <KpiCard key={`${timeRange}-${i}`} {...kpi} light={true} />
+              ))}
+            </div>
+
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <EngagementChart data={currentData.performanceData} light={true} />
+              </div>
+              <div>
+                <DemographicsChart data={currentData.demographicData} colors={PIE_COLORS} light={true} />
+              </div>
+              <div className="lg:col-span-3">
+                <CampaignPerformanceChart data={currentData.campaignData} light={true} />
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
