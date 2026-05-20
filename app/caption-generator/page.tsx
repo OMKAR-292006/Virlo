@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { CaptionResponse } from '@/lib/gemini';
 import { motion, AnimatePresence } from 'framer-motion';
+import AppSidebar from '@/components/ui/AppSidebar';
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -116,69 +117,7 @@ export default function CaptionGenerator() {
 
   return (
     <div className="min-h-screen bg-black text-neutral-50 font-sans flex overflow-hidden selection:bg-white/10">
-      {/* Sidebar Mobile Overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Remains Dark and Elegant */}
-      <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-[#050505] border-r border-white/[0.08]
-        transform transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        flex flex-col shrink-0
-      `}>
-        <div className="h-16 flex items-center px-6 border-b border-white/[0.08]">
-          <Link href="/" className="flex items-center gap-2 cursor-pointer">
-            <div className="p-1.5 rounded-lg bg-white/10 text-white">
-              <Sparkles size={20} />
-            </div>
-            <span className="font-bold text-xl tracking-tight">Brand Matic</span>
-          </Link>
-          <button 
-            className="ml-auto lg:hidden text-neutral-400 hover:text-white"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={() => setSidebarOpen(false)}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                ${pathname === item.href
-                  ? 'bg-white/10 text-white' 
-                  : 'text-neutral-400 hover:text-white hover:bg-white/5'}
-              `}
-            >
-              <item.icon size={18} />
-              {item.name}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-white/[0.08]">
-          <div className="p-4 rounded-xl bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-            <div className="flex items-center gap-2 text-white mb-2">
-              <Sparkles size={16} />
-              <span className="text-sm font-semibold">Pro Plan Active</span>
-            </div>
-            <p className="text-xs text-neutral-400 mb-3">You have 12,400 AI credits remaining this month.</p>
-            <button className="w-full py-2 px-4 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors">
-              Upgrade
-            </button>
-          </div>
-        </div>
-      </aside>
+      <AppSidebar mobileOpen={sidebarOpen} onMobileClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Area - Off-white Light Theme as in User Screenshot */}
       <main className="flex-1 flex flex-col min-w-0 z-10 h-screen overflow-hidden bg-[#f6f2ee] text-slate-800">

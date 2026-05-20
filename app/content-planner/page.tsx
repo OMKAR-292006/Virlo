@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { PlannerResponse } from '@/lib/gemini';
 import { motion, AnimatePresence } from 'framer-motion';
+import AppSidebar from '@/components/ui/AppSidebar';
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -43,6 +44,179 @@ interface CalendarDay {
   posts: CalendarPost[];
 }
 
+// ── Mini calendar week picker ──────────────────────────────────────────────
+function WeekPicker({ weekOffset, onOffsetChange }: { weekOffset: number; onOffsetChange: (o: number) => void }) {
+  const [open, setOpen] = useState(false);
+  const [calMonth, setCalMonth] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, []);
+
+  // Get Monday of current week + offset
+  const getMonday = (offset: number) => {
+    const today = new Date();
+    const dow = today.getDay();
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1) + offset * 7);
+    mon.setHours(0, 0, 0, 0);
+    return mon;
+  };
+
+  const selectedMonday = getMonday(weekOffset);
+
+  // Build calendar grid for calMonth
+  const year = calMonth.getFullYear();
+  const month = calMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startDow = firstDay.getDay(); // 0=Sun
+  // Start grid from Monday before first of month
+  const gridStart = new Date(firstDay);
+  gridStart.setDate(firstDay.getDate() - (startDow === 0 ? 6 : startDow - 1));
+
+  const weeks: Date[][] = [];
+  const cursor = new Date(gridStart);
+  for (let w = 0; w < 6; w++) {
+    const week: Date[] = [];
+    for (let d = 0; d < 7; d++) {
+      week.push(new Date(cursor));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    weeks.push(week);
+    // Stop if we've passed the month and filled at least 4 weeks
+    if (w >= 3 && week[0].getMonth() !== month && week[6].getMonth() !== month) break;
+  }
+
+  const isSameWeek = (mon: Date) => mon.getTime() === selectedMonday.getTime();
+  const isToday = (d: Date) => {
+    const t = new Date(); t.setHours(0,0,0,0);
+    return d.getTime() === t.getTime();
+  };
+
+  const handleWeekClick = (mon: Date) => {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const todayMon = getMonday(0);
+    const diff = Math.round((mon.getTime() - todayMon.getTime()) / (7 * 86400000));
+    onOffsetChange(diff);
+    setOpen(false);
+  };
+
+  const DAYS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  return (
+    <div className="relative" ref={ref}>
+      {/* Trigger pill */}
+      <div className="flex items-center bg-white border border-slate-200 rounded-full shadow-sm overflow-hidden">
+        <button
+          onClick={() => onOffsetChange(weekOffset - 1)}
+          className="px-2.5 py-1.5 hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-colors"
+        >
+          <ChevronLeft size={14} />
+        </button>
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-900 transition-colors flex items-center gap-1.5"
+        >
+          <CalendarDays size={12} />
+          {weekOffset === 0 ? 'This Week' : weekOffset === 1 ? 'Next Week' : weekOffset === -1 ? 'Last Week' : weekOffset > 0 ? `In ${weekOffset} weeks` : `${Math.abs(weekOffset)} weeks ago`}
+        </button>
+        <button
+          onClick={() => onOffsetChange(weekOffset + 1)}
+          className="px-2.5 py-1.5 hover:bg-slate-50 text-slate-400 hover:text-slate-700 transition-colors"
+        >
+          <ChevronRight size={14} />
+        </button>
+      </div>
+
+      {/* Calendar dropdown */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.97 }}
+            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+            className="absolute left-0 top-10 z-50 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 w-72"
+          >
+            {/* Month nav */}
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={() => setCalMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+              >
+                <ChevronLeft size={14} />
+              </button>
+              <span className="text-sm font-bold text-slate-800">{MONTHS[month]} {year}</span>
+              <button
+                onClick={() => setCalMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+
+            {/* Day headers */}
+            <div className="grid grid-cols-7 mb-1">
+              {DAYS.map(d => (
+                <div key={d} className="text-center text-[10px] font-bold text-slate-400 py-1">{d}</div>
+              ))}
+            </div>
+
+            {/* Weeks */}
+            {weeks.map((week, wi) => {
+              const mon = week[0];
+              const selected = isSameWeek(mon);
+              return (
+                <button
+                  key={wi}
+                  onClick={() => handleWeekClick(mon)}
+                  className="grid grid-cols-7 w-full mb-0.5 group/week"
+                >
+                  {week.map((day, di) => {
+                    const inMonth = day.getMonth() === month;
+                    const today = isToday(day);
+                    const isFirst = di === 0;
+                    const isLast = di === 6;
+                    return (
+                      <div key={di} className={`
+                        text-center py-1.5 text-xs font-semibold transition-colors
+                        ${isFirst ? 'rounded-l-xl' : ''} ${isLast ? 'rounded-r-xl' : ''}
+                        ${selected
+                          ? 'bg-slate-900 text-white'
+                          : 'group-hover/week:bg-slate-100 ' + (inMonth ? 'text-slate-700' : 'text-slate-300')}
+                        ${today && !selected ? 'text-red-500 font-black' : ''}
+                      `}>
+                        {day.getDate()}
+                      </div>
+                    );
+                  })}
+                </button>
+              );
+            })}
+
+            {/* Today shortcut */}
+            <button
+              onClick={() => { onOffsetChange(0); setOpen(false); }}
+              className="mt-2 w-full py-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-colors"
+            >
+              Jump to Today
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function ContentPlanner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [generatorModalOpen, setGeneratorModalOpen] = useState(false);
@@ -66,16 +240,49 @@ export default function ContentPlanner() {
 
   const pathname = usePathname();
 
-  // API states
+  // Real week navigation
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  // Compute the Monday of the current week + offset
+  const getWeekDays = (offset: number) => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon...
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1) + offset * 7);
+
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return days.map((name, i) => {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      return {
+        name,
+        date: String(d.getDate()),
+        month: d.toLocaleString('default', { month: 'short' }),
+        fullDate: d,
+      };
+    });
+  };
+
+  const weekDays = getWeekDays(weekOffset);
+  const weekStart = weekDays[0].fullDate;
+  const weekEnd = weekDays[6].fullDate;
+  const isCurrentWeek = weekOffset === 0;
+
+  const formatWeekLabel = () => {
+    const startStr = `${weekDays[0].month} ${weekDays[0].date}`;
+    const endStr = `${weekDays[6].month} ${weekDays[6].date}`;
+    const year = weekEnd.getFullYear();
+    return `${startStr} – ${endStr}, ${year}`;
+  };
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ businessName: '', industry: '', targetAudience: '' });
 
-  // Default demo schedule matching the user screenshot
+  // Default demo schedule — dates come from real weekDays
   const initialDays: CalendarDay[] = [
     {
       name: 'Mon',
-      date: '24',
+      date: weekDays[0].date,
       posts: [
         {
           image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&auto=format&fit=crop&q=80',
@@ -87,7 +294,7 @@ export default function ContentPlanner() {
     },
     {
       name: 'Tue',
-      date: '25',
+      date: weekDays[1].date,
       posts: [
         {
           isTip: true,
@@ -100,7 +307,7 @@ export default function ContentPlanner() {
     },
     {
       name: 'Wed',
-      date: '26',
+      date: weekDays[2].date,
       posts: [
         {
           empty: true,
@@ -112,7 +319,7 @@ export default function ContentPlanner() {
     },
     {
       name: 'Thu',
-      date: '27',
+      date: weekDays[3].date,
       posts: [
         {
           isHolidayBanner: true,
@@ -128,7 +335,7 @@ export default function ContentPlanner() {
     },
     {
       name: 'Fri',
-      date: '28',
+      date: weekDays[4].date,
       posts: [
         {
           empty: true,
@@ -140,7 +347,7 @@ export default function ContentPlanner() {
     },
     {
       name: 'Sat',
-      date: '29',
+      date: weekDays[5].date,
       posts: [
         {
           image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=500&auto=format&fit=crop&q=80',
@@ -152,7 +359,7 @@ export default function ContentPlanner() {
     },
     {
       name: 'Sun',
-      date: '30',
+      date: weekDays[6].date,
       posts: [
         {
           empty: true,
@@ -164,8 +371,12 @@ export default function ContentPlanner() {
     }
   ];
 
-  // Calendar data state
-  const [calendarData, setCalendarData] = useState<CalendarDay[]>(initialDays);
+  // Reset calendar when week changes
+  const [calendarData, setCalendarData] = useState<CalendarDay[]>(() => initialDays);
+  useEffect(() => {
+    setCalendarData(initialDays.map((day, i) => ({ ...day, date: weekDays[i].date })));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weekOffset]);
 
   // Sync edits when drawer opens
   useEffect(() => {
@@ -306,69 +517,7 @@ export default function ContentPlanner() {
   return (
     <div className="min-h-screen bg-black text-neutral-50 font-sans flex overflow-hidden selection:bg-white/10">
       
-      {/* Sidebar Mobile Overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Left Sidebar - Dark Theme */}
-      <aside className={`
-        fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-[#050505] border-r border-white/[0.08]
-        transform transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        flex flex-col shrink-0
-      `}>
-        <div className="h-16 flex items-center px-6 border-b border-white/[0.08]">
-          <Link href="/" className="flex items-center gap-2 cursor-pointer">
-            <div className="p-1.5 rounded-lg bg-white/10 text-white">
-              <Sparkles size={20} />
-            </div>
-            <span className="font-bold text-xl tracking-tight">Brand Matic</span>
-          </Link>
-          <button 
-            className="ml-auto lg:hidden text-neutral-400 hover:text-white"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={() => setSidebarOpen(false)}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                ${pathname === item.href
-                  ? 'bg-white/10 text-white' 
-                  : 'text-neutral-400 hover:text-white hover:bg-white/5'}
-              `}
-            >
-              <item.icon size={18} />
-              {item.name}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-white/[0.08]">
-          <div className="p-4 rounded-xl bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-            <div className="flex items-center gap-2 text-white mb-2">
-              <Sparkles size={16} />
-              <span className="text-sm font-semibold">Pro Plan Active</span>
-            </div>
-            <p className="text-xs text-neutral-400 mb-3">You have 12,400 AI credits remaining this month.</p>
-            <button className="w-full py-2 px-4 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors">
-              Upgrade
-            </button>
-          </div>
-        </div>
-      </aside>
+      <AppSidebar mobileOpen={sidebarOpen} onMobileClose={() => setSidebarOpen(false)} />
 
       {/* Main Content Area - Styled to fit page height with right sliding layout */}
       <main className="flex-1 flex flex-col min-w-0 z-10 h-screen overflow-hidden bg-[#f6f2ee] text-slate-800">
@@ -400,18 +549,14 @@ export default function ContentPlanner() {
         </header>
 
         {/* Content Pane */}
-        <div className="flex-1 p-6 sm:p-8 flex flex-col overflow-hidden h-[calc(100vh-64px)] relative">
+        <div className="flex-1 p-4 sm:p-6 flex flex-col overflow-hidden h-[calc(100vh-64px)] relative">
           
           {/* Header Row */}
-          <div className="flex items-center justify-between mb-8 shrink-0">
-            <div className="flex items-center gap-4">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">Week of Oct 24 - Oct 30</h2>
-              {/* Switcher Pill */}
-              <div className="flex items-center px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-semibold text-slate-500 shadow-sm">
-                <button className="hover:text-slate-800 transition-colors p-0.5"><ChevronLeft size={14} /></button>
-                <span className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-700">This Week</span>
-                <button className="hover:text-slate-800 transition-colors p-0.5"><ChevronRight size={14} /></button>
-              </div>
+          <div className="flex items-center justify-between mb-5 shrink-0">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">{formatWeekLabel()}</h2>
+              {/* Week Navigator with Calendar Picker */}
+              <WeekPicker weekOffset={weekOffset} onOffsetChange={setWeekOffset} />
             </div>
 
             <div className="flex items-center gap-3">
@@ -446,8 +591,11 @@ export default function ContentPlanner() {
                 
                 {/* Day Header */}
                 <div className="text-sm font-bold text-slate-900 mb-3.5 flex items-baseline gap-1">
-                  <span>{dayPlan.name === 'Thu' ? <span className="text-amber-600">{dayPlan.name}</span> : dayPlan.name}</span>
+                  <span>{dayPlan.name === weekDays[3].name && weekDays[3].fullDate.getMonth() === 9 ? <span className="text-amber-600">{dayPlan.name}</span> : dayPlan.name}</span>
                   <span className="text-slate-400 font-semibold text-xs">{dayPlan.date}</span>
+                  {i === 0 || dayPlan.date === '1' ? (
+                    <span className="text-slate-300 font-semibold text-[10px]">{weekDays[i]?.month}</span>
+                  ) : null}
                 </div>
 
                 {/* Day Column Card Container */}

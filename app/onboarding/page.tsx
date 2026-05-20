@@ -109,13 +109,13 @@ export default function OnboardingForm() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
+    <div className="min-h-screen bg-black flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8 overflow-hidden relative">
       <div className="fixed inset-0 pointer-events-none bg-black">
         <div className="absolute top-0 left-0 right-0 h-[400px] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.07),transparent)]" />
       </div>
 
       {/* Header */}
-      <div className="w-full max-w-3xl mb-10 flex items-center gap-2 text-white z-10">
+      <div className="w-full max-w-3xl mb-6 flex items-center gap-2 text-white z-10">
         <div className="p-2 rounded-xl bg-white/10">
           <Sparkles size={20} />
         </div>
@@ -124,7 +124,7 @@ export default function OnboardingForm() {
 
       <div className="w-full max-w-3xl flex-1 z-10">
         {/* Progress Tracker */}
-        <div className="mb-12">
+        <div className="mb-8">
           <div className="flex justify-between relative">
             <div className="absolute top-5 left-0 right-0 h-px bg-white/[0.08] -z-10" />
             <motion.div
@@ -151,7 +151,7 @@ export default function OnboardingForm() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-3xl p-6 sm:p-10">
+        <div className="bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-3xl p-5 sm:p-8">
           <AnimatePresence mode="wait">
             <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
               
@@ -291,7 +291,7 @@ export default function OnboardingForm() {
           </AnimatePresence>
 
           {/* Form Controls */}
-          <div className="mt-10 pt-6 border-t border-white/[0.08] flex items-center justify-between">
+          <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between">
             <button onClick={() => setCurrentStep(p => p - 1)}
               className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 ${currentStep === 0 ? 'opacity-0 pointer-events-none' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
             >

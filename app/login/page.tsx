@@ -28,10 +28,10 @@ export default function LoginPage() {
 
     // Mock credential check
     if (form.email === 'demo@brandmatic.ai' && form.password === 'demo1234') {
-      router.push('/dashboard');
+      router.push('/home');
     } else if (form.email && form.password.length >= 6) {
       // Accept any valid-looking credentials for demo
-      router.push('/dashboard');
+      router.push('/home');
     } else {
       setError('Password must be at least 6 characters.');
       setLoading(false);

@@ -54,13 +54,13 @@ export default function TrendEngine() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-neutral-50 p-6 lg:p-12 font-sans selection:bg-white/10">
+    <div className="min-h-screen bg-black text-neutral-50 p-4 lg:p-8 font-sans selection:bg-white/10">
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 bg-black">
         <div className="absolute top-0 left-0 right-0 h-[400px] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.07),transparent)]" />
       </div>
 
-      <div className="max-w-7xl mx-auto space-y-8 relative z-10">
+      <div className="max-w-7xl mx-auto space-y-5 relative z-10">
         {/* Header & Settings */}
         <motion.div
           className="flex flex-col lg:flex-row lg:items-center justify-between gap-6"

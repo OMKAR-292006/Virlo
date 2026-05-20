@@ -14,6 +14,7 @@ import { EngagementChart } from '@/components/charts/EngagementChart';
 import { DemographicsChart } from '@/components/charts/DemographicsChart';
 import { CampaignPerformanceChart } from '@/components/charts/CampaignPerformanceChart';
 import { motion } from 'framer-motion';
+import AppSidebar from '@/components/ui/AppSidebar';
 
 const navItems = [
   { name: 'Dashboard', icon: Home, href: '/dashboard' },
@@ -122,52 +123,23 @@ export default function AnalyticsDashboard() {
 
   return (
     <div className="min-h-screen bg-[#f6f2ee] text-slate-800 font-sans flex overflow-hidden selection:bg-black/10">
-      {/* Sidebar Mobile Overlay */}
-      {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />}
-
-      {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#050505] border-r border-white/[0.08] transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} flex flex-col`}>
-        <div className="h-16 flex items-center px-6 border-b border-white/[0.08]">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-white/10 text-white"><Sparkles size={18} /></div>
-            <span className="font-bold text-xl tracking-tight text-white">Brand Matic</span>
-          </div>
-          <button className="ml-auto lg:hidden text-neutral-400 hover:text-white" onClick={() => setSidebarOpen(false)}><X size={20}/></button>
-        </div>
-        <nav className="flex-1 px-4 py-6 space-y-1">
-          {navItems.map((item) => (
-            <Link key={item.name} href={item.href} onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${pathname === item.href ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
-            >
-              <item.icon size={18} />{item.name}
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-white/[0.08]">
-          <div className="p-4 rounded-xl bg-[#0a0a0a] border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-            <div className="flex items-center gap-2 text-white mb-2">
-              <Sparkles size={16} />
-              <span className="text-sm font-semibold">Pro Plan Active</span>
-            </div>
-            <p className="text-xs text-neutral-400 mb-3">You have 12,400 AI credits remaining this month.</p>
-            <button className="w-full py-2 px-4 rounded-lg bg-white/5 hover:bg-white/10 text-sm font-medium transition-colors text-white border border-white/10">Upgrade</button>
-          </div>
-        </div>
-      </aside>
+      <AppSidebar mobileOpen={sidebarOpen} onMobileClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 z-10 h-screen overflow-hidden relative">
-        {/* Floating Menu Button for Mobile */}
-        <button 
-          className="lg:hidden absolute top-4 left-4 z-30 p-2.5 bg-white border border-slate-200 rounded-full shadow-sm text-slate-600 hover:text-slate-900 transition-all active:scale-95"
-          onClick={() => setSidebarOpen(true)}
-        >
-          <Menu size={20} />
-        </button>
+        {/* Black header bar */}
+        <header className="h-16 bg-[#050505] border-b border-white/[0.08] shrink-0 flex items-center px-4 sm:px-6 lg:px-8">
+          <button
+            className="lg:hidden text-neutral-400 hover:text-white transition-colors"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu size={22} />
+          </button>
+        </header>
 
         {/* Analytics Scrollable View */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-16 sm:pt-20 lg:pt-8">
-          <div className="max-w-5xl mx-auto space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+          <div className="max-w-5xl mx-auto space-y-4">
             
             {/* Header Title */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -230,7 +202,7 @@ export default function AnalyticsDashboard() {
 
             {/* Charts Grid */}
             <motion.div
-              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 lg:grid-cols-3 gap-4"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
