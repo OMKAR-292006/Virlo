@@ -11,6 +11,8 @@ import {
 import { PlannerResponse } from '@/lib/gemini';
 import { motion, AnimatePresence } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
+import { useAuth } from '@/lib/auth-context';
+import { getProfile } from '@/lib/user-profile';
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -277,6 +279,22 @@ export default function ContentPlanner() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ businessName: '', industry: '', targetAudience: '' });
+  const { user } = useAuth();
+
+  // Pre-fill AI generator form from Firestore profile
+  useEffect(() => {
+    if (user?.uid) {
+      getProfile(user.uid).then(p => {
+        if (p) {
+          setFormData({
+            businessName: p.businessName || '',
+            industry: p.industry || '',
+            targetAudience: p.targetAudience || '',
+          });
+        }
+      });
+    }
+  }, [user]);
 
   // Default demo schedule — dates come from real weekDays
   const initialDays: CalendarDay[] = [

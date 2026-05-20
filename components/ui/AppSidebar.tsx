@@ -1,10 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, House, LayoutDashboard, Megaphone, CalendarDays, BarChart2, X } from 'lucide-react';
+import { Sparkles, House, LayoutDashboard, Megaphone, CalendarDays, BarChart2, X, User, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 const navItems = [
   { name: 'Home', icon: House, href: '/home' },
@@ -31,7 +34,24 @@ interface Props {
 
 export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+    }
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut(auth);
+    router.push('/login');
+  };
 
   return (
     <>
@@ -148,6 +168,63 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
             );
           })}
         </nav>
+
+        {/* Profile section at bottom */}
+        <div className="border-t border-white/[0.08] p-2 relative" ref={profileRef}>
+          <button
+            onClick={() => setProfileOpen(o => !o)}
+            title={collapsed ? (user?.email || 'Profile') : undefined}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:bg-white/5 ${collapsed ? 'justify-center' : ''}`}
+          >
+            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px] shrink-0">
+              <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                <User size={13} className="text-slate-300" />
+              </div>
+            </div>
+            <AnimatePresence initial={false}>
+              {!collapsed && (
+                <motion.div
+                  className="flex-1 min-w-0 text-left overflow-hidden"
+                  initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }} transition={{ duration: 0.2 }}
+                >
+                  <p className="text-xs font-semibold text-white truncate">{user?.displayName || 'My Account'}</p>
+                  <p className="text-[10px] text-neutral-500 truncate">{user?.email || 'demo@brandmatic.ai'}</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </button>
+
+          {/* Profile popup */}
+          <AnimatePresence>
+            {profileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                transition={{ duration: 0.18 }}
+                className="absolute bottom-full left-2 right-2 mb-2 bg-[#0d0d0d] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl z-50"
+              >
+                <div className="px-4 py-3 border-b border-white/[0.08]">
+                  <p className="text-xs font-bold text-white truncate">{user?.displayName || 'My Account'}</p>
+                  <p className="text-[11px] text-neutral-500 truncate">{user?.email || 'demo@brandmatic.ai'}</p>
+                </div>
+                <div className="py-1">
+                  <Link href="/settings" onClick={() => setProfileOpen(false)}>
+                    <div className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
+                      <Settings size={14} /> Settings
+                    </div>
+                  </Link>
+                </div>
+                <div className="border-t border-white/[0.08] py-1">
+                  <button onClick={handleSignOut} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/[0.04] transition-colors">
+                    <LogOut size={14} /> Sign out
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.aside>
     </>
   );

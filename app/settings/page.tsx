@@ -1,32 +1,25 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home, Megaphone, CalendarDays, BarChart2, Settings,
   Sparkles, User, Bell, Menu, X, ChevronRight, Check,
-  Search, Eye, EyeOff, Pencil, CreditCard
+  Eye, EyeOff, Pencil, CreditCard
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
-
-const navItems = [
-  { name: 'Dashboard', icon: Home, href: '/dashboard' },
-  { name: 'Campaigns', icon: Megaphone, href: '/caption-generator' },
-  { name: 'AI Planner', icon: CalendarDays, href: '/content-planner' },
-  { name: 'Analytics', icon: BarChart2, href: '/analytics' },
-  { name: 'Settings', icon: Settings, href: '/settings' },
-];
+import { useAuth } from '@/lib/auth-context';
+import { getProfile, updateProfile, UserProfile } from '@/lib/user-profile';
+import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 function Toggle({ defaultOn = false }: { defaultOn?: boolean }) {
   const [on, setOn] = useState(defaultOn);
   return (
-    <button
-      type="button"
-      onClick={() => setOn(!on)}
-      className={`relative w-12 h-6 rounded-full transition-colors flex items-center shrink-0 ${on ? 'bg-[#00c592]' : 'bg-slate-200'}`}
-    >
+    <button type="button" onClick={() => setOn(!on)}
+      className={`relative w-12 h-6 rounded-full transition-colors flex items-center shrink-0 ${on ? 'bg-[#00c592]' : 'bg-slate-200'}`}>
       <div className={`w-5 h-5 rounded-full bg-white shadow-sm flex items-center justify-center transition-all absolute ${on ? 'left-[25px]' : 'left-[3px]'}`}>
         {on && <Check size={12} className="text-[#00c592] stroke-[3]" />}
       </div>
@@ -35,14 +28,51 @@ function Toggle({ defaultOn = false }: { defaultOn?: boolean }) {
 }
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', newPassword: '' });
   const pathname = usePathname();
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  useEffect(() => {
+    if (user?.uid) {
+      getProfile(user.uid).then(p => {
+        if (p) {
+          setProfile(p);
+          setForm({
+            firstName: p.firstName || '',
+            lastName: p.lastName || '',
+            email: p.email || user.email || '',
+            newPassword: '',
+          });
+        } else {
+          setForm(f => ({ ...f, email: user.email || '' }));
+        }
+      });
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user?.uid) return;
+    setSaving(true);
+    try {
+      await updateProfile(user.uid, {
+        firstName: form.firstName,
+        lastName: form.lastName,
+      });
+      if (form.newPassword && form.newPassword.length >= 6) {
+        await updatePassword(user, form.newPassword);
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error('Save error:', err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -107,17 +137,21 @@ export default function SettingsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">First Name</label>
-                      <input 
-                        type="text" 
-                        defaultValue="Sarah" 
+                      <input
+                        type="text"
+                        value={form.firstName}
+                        onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))}
+                        placeholder="First name"
                         className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400"
                       />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Last Name</label>
-                      <input 
-                        type="text" 
-                        defaultValue="Jenkins" 
+                      <input
+                        type="text"
+                        value={form.lastName}
+                        onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))}
+                        placeholder="Last name"
                         className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400"
                       />
                     </div>
@@ -125,37 +159,35 @@ export default function SettingsPage() {
 
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
-                    <input 
-                      type="email" 
-                      defaultValue="sarah.j@friendlyagency.co" 
-                      className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400"
+                    <input
+                      type="email"
+                      value={form.email}
+                      readOnly
+                      className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-500 text-xs font-semibold focus:outline-none transition-all cursor-not-allowed"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Change Password</label>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">New Password <span className="text-slate-400 normal-case font-normal">(leave blank to keep current)</span></label>
                     <div className="relative">
-                      <input 
-                        type={showPassword ? "text" : "password"} 
-                        defaultValue="sarahpass123" 
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={form.newPassword}
+                        onChange={e => setForm(f => ({ ...f, newPassword: e.target.value }))}
+                        placeholder="Min. 6 characters"
                         className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 text-xs font-semibold focus:outline-none transition-all placeholder:text-slate-400 pr-10"
                       />
-                      <button 
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                      >
+                      <button type="button" onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </button>
                     </div>
                   </div>
 
                   <div className="flex justify-end pt-2">
-                    <button 
-                      onClick={handleSave}
-                      className="px-6 py-2 bg-[#e52521] hover:bg-[#c81916] text-white text-xs font-bold rounded-xl transition-colors shadow-sm"
-                    >
-                      {saved ? 'Saved!' : 'Save Changes'}
+                    <button onClick={handleSave} disabled={saving}
+                      className="px-6 py-2 bg-[#e52521] hover:bg-[#c81916] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl transition-colors shadow-sm">
+                      {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
                     </button>
                   </div>
                 </div>

@@ -202,7 +202,6 @@ export default function HomePage() {
                     </div>
                     <div className="py-1">
                       {[
-                        { label: 'Dashboard', href: '/dashboard' },
                         { label: 'Settings', href: '/settings' },
                       ].map(item => (
                         <Link key={item.label} href={item.href} onClick={() => setProfileOpen(false)}>

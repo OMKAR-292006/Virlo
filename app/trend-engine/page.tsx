@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 import { FestivalResponse } from '@/lib/gemini';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/lib/auth-context';
+import { getProfile } from '@/lib/user-profile';
 
 const UPCOMING_FESTIVALS = [
   { id: 1, name: "Halloween", date: "2026-10-31", category: "Holiday" },
@@ -20,8 +22,21 @@ const UPCOMING_FESTIVALS = [
 const inputClass = "bg-black border border-white/[0.08] rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:ring-1 focus:ring-white/[0.2] outline-none w-full sm:w-48 transition-all placeholder:text-neutral-600 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]";
 
 export default function TrendEngine() {
-  const [businessName, setBusinessName] = useState('Brand Matic');
-  const [industry, setIndustry] = useState('E-commerce');
+  const { user } = useAuth();
+  const [businessName, setBusinessName] = useState('');
+  const [industry, setIndustry] = useState('');
+
+  // Pre-fill from Firestore profile
+  useEffect(() => {
+    if (user?.uid) {
+      getProfile(user.uid).then(p => {
+        if (p) {
+          setBusinessName(p.businessName || '');
+          setIndustry(p.industry || '');
+        }
+      });
+    }
+  }, [user]);
   const [selectedFestival, setSelectedFestival] = useState<typeof UPCOMING_FESTIVALS[0] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
