@@ -11,6 +11,11 @@ import {
 import AppSidebar from '@/components/ui/AppSidebar';
 import { mockCalendar, mockCampaigns, performanceData } from '@/lib/mock-data';
 import { EngagementAreaChart } from '@/components/charts/EngagementAreaChart';
+import { useAuth } from '@/lib/auth-context';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 // ── Simulated user profile (would come from auth/onboarding in production) ──
 const USER = {
@@ -62,13 +67,26 @@ function FadeUp({ children, delay = 0, className }: { children: React.ReactNode;
 }
 
 export default function HomePage() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tasks, setTasks] = useState(initialTasks);
   const [aiTip, setAiTip] = useState(0);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Load Firestore profile
+  useEffect(() => {
+    if (user?.uid) {
+      getDoc(doc(db, 'profiles', user.uid)).then(snap => {
+        if (snap.exists()) setProfile(snap.data() as any);
+      });
+    }
+  }, [user]);
+
+  const displayName = profile?.businessName || user?.displayName || USER.name;
 
   useEffect(() => {
     function handle(e: MouseEvent) {
@@ -195,7 +213,7 @@ export default function HomePage() {
                       ))}
                     </div>
                     <div className="border-t border-white/[0.08] py-1">
-                      <Link href="/login" onClick={() => setProfileOpen(false)}>
+                      <Link href="/login" onClick={() => { signOut(auth); setProfileOpen(false); }}>
                         <div className="px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/[0.04] transition-colors cursor-pointer">
                           Sign out
                         </div>
@@ -215,10 +233,10 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-                  {GREETING}, {USER.name} 👋
+                  {GREETING}, {displayName} 👋
                 </h1>
                 <p className="text-slate-500 text-sm mt-1">
-                  Here's what's happening with <span className="font-semibold text-slate-700">{USER.business}</span> today.
+                  Here's what's happening with <span className="font-semibold text-slate-700">{profile?.businessName || USER.business}</span> today.
                 </p>
               </div>
               <Link href="/caption-generator">

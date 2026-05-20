@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, TrendingUp, Zap, Clock, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 const SLIDES = [
   {
@@ -49,7 +51,8 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [slide, setSlide] = useState(0);
 
-  useEffect(() => {
+  // Auto-rotate slides
+  React.useEffect(() => {
     const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 4000);
     return () => clearInterval(t);
   }, []);
@@ -59,13 +62,18 @@ export default function LoginPage() {
     setError(null);
     if (!form.email || !form.password) { setError('Please fill in all fields.'); return; }
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    if (form.email === 'demo@brandmatic.ai' && form.password === 'demo1234') {
+    try {
+      await signInWithEmailAndPassword(auth, form.email, form.password);
       router.push('/home');
-    } else if (form.email && form.password.length >= 6) {
-      router.push('/home');
-    } else {
-      setError('Password must be at least 6 characters.');
+    } catch (err: any) {
+      const code = err?.code || '';
+      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        setError('Invalid email or password.');
+      } else if (code === 'auth/too-many-requests') {
+        setError('Too many attempts. Please try again later.');
+      } else {
+        setError('Sign in failed. Please try again.');
+      }
       setLoading(false);
     }
   };

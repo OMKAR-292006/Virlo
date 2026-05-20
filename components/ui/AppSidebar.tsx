@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Home, Megaphone, CalendarDays, BarChart2, Settings, X } from 'lucide-react';
+import { Sparkles, House, LayoutDashboard, Megaphone, CalendarDays, BarChart2, X } from 'lucide-react';
 
 const navItems = [
-  { name: 'Dashboard', icon: Home, href: '/dashboard' },
+  { name: 'Home', icon: House, href: '/home' },
+  { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
   { name: 'Campaigns', icon: Megaphone, href: '/caption-generator' },
   { name: 'AI Planner', icon: CalendarDays, href: '/content-planner' },
   { name: 'Analytics', icon: BarChart2, href: '/analytics' },
-  { name: 'Settings', icon: Settings, href: '/settings' },
 ];
 
 function HamburgerIcon() {
