@@ -185,7 +185,7 @@ export default function AnalyticsDashboard() {
 
             {/* KPI Cards */}
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
               initial="hidden"
               animate="visible"
               variants={{ visible: { transition: { staggerChildren: 0.08 } } }}

@@ -90,14 +90,14 @@ export default function TrendEngine() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Festival List */}
-          <div className="xl:col-span-5 space-y-4">
+          <div className="lg:col-span-5 space-y-4">
             <h2 className="text-lg font-bold mb-6 flex items-center gap-2 text-neutral-300">
               <CalendarHeart size={18} /> Upcoming Events
             </h2>
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3"
               initial="hidden"
               animate="visible"
               variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } } }}
@@ -136,7 +136,7 @@ export default function TrendEngine() {
           </div>
 
           {/* AI Output */}
-          <div className="xl:col-span-7">
+          <div className="lg:col-span-7">
             <AnimatePresence mode="wait">
               {error && (
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="p-4 mb-6 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-2xl">{error}</motion.div>
