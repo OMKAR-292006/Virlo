@@ -73,6 +73,7 @@ export default function HomePage() {
   const [aiTip, setAiTip] = useState(0);
   const [addingTask, setAddingTask] = useState(false);
   const [newTaskLabel, setNewTaskLabel] = useState('');
+  const [notifCount, setNotifCount] = useState(3);
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
@@ -140,7 +141,7 @@ export default function HomePage() {
                 className="relative p-2 text-neutral-400 hover:text-white transition-colors rounded-full hover:bg-white/5"
               >
                 <Bell size={18} />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-blue-500" />
+                {notifCount > 0 && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-blue-500" />}
               </button>
               <AnimatePresence>
                 {notifOpen && (
@@ -153,7 +154,7 @@ export default function HomePage() {
                   >
                     <div className="px-4 py-3 border-b border-white/[0.08] flex items-center justify-between">
                       <span className="text-sm font-bold text-white">Notifications</span>
-                      <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">3 new</span>
+                      {notifCount > 0 && <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">{notifCount} new</span>}
                     </div>
                     <div className="divide-y divide-white/[0.05]">
                       {[
@@ -172,7 +173,12 @@ export default function HomePage() {
                       ))}
                     </div>
                     <div className="px-4 py-2.5 border-t border-white/[0.08]">
-                      <button className="text-xs text-neutral-400 hover:text-white transition-colors font-medium">Mark all as read</button>
+                      <button
+                        onClick={() => { setNotifCount(0); setNotifOpen(false); }}
+                        className="text-xs text-neutral-400 hover:text-white transition-colors font-medium"
+                      >
+                        Mark all as read
+                      </button>
                     </div>
                   </motion.div>
                 )}
@@ -398,23 +404,25 @@ export default function HomePage() {
                   </div>
                   <div className="space-y-2">
                     {mockCalendar.slice(0, 4).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
-                        <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-[#faf8f6] border border-slate-200 shrink-0">
-                          <span className="text-[10px] font-black text-slate-700">{item.day}</span>
-                          <Clock size={9} className="text-slate-400 mt-0.5" />
+                      <Link key={i} href="/content-planner">
+                        <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                          <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-[#faf8f6] border border-slate-200 shrink-0">
+                            <span className="text-[10px] font-black text-slate-700">{item.day}</span>
+                            <Clock size={9} className="text-slate-400 mt-0.5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-slate-800 truncate">{item.title}</p>
+                            <p className="text-[10px] text-slate-400 font-semibold">{item.type} · {item.time}</p>
+                          </div>
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0
+                            ${item.status === 'Scheduled' ? 'bg-emerald-50 text-emerald-600' : ''}
+                            ${item.status === 'Draft' ? 'bg-slate-100 text-slate-500' : ''}
+                            ${item.status === 'AI Generating' ? 'bg-blue-50 text-blue-600' : ''}
+                          `}>
+                            {item.status}
+                          </span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-slate-800 truncate">{item.title}</p>
-                          <p className="text-[10px] text-slate-400 font-semibold">{item.type} · {item.time}</p>
-                        </div>
-                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0
-                          ${item.status === 'Scheduled' ? 'bg-emerald-50 text-emerald-600' : ''}
-                          ${item.status === 'Draft' ? 'bg-slate-100 text-slate-500' : ''}
-                          ${item.status === 'AI Generating' ? 'bg-blue-50 text-blue-600' : ''}
-                        `}>
-                          {item.status}
-                        </span>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -444,28 +452,30 @@ export default function HomePage() {
                   </thead>
                   <tbody>
                     {mockCampaigns.map((c, i) => (
-                      <tr key={i} className="border-b border-slate-50 hover:bg-[#faf8f6] transition-colors">
-                        <td className="px-4 py-3 font-bold text-slate-800">{c.name}</td>
-                        <td className="px-4 py-3 text-slate-500 font-medium">{c.platform}</td>
-                        <td className="px-4 py-3 font-bold text-slate-800">{c.spend}</td>
-                        <td className="px-4 py-3">
-                          <span className="px-2 py-0.5 bg-[#faf8f6] border border-slate-200 rounded-md text-xs font-bold text-slate-700">{c.roas}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold
-                            ${c.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : ''}
-                            ${c.status === 'Completed' ? 'bg-slate-100 text-slate-500' : ''}
-                            ${c.status === 'Paused' ? 'bg-amber-50 text-amber-600' : ''}
-                          `}>
-                            <span className={`w-1.5 h-1.5 rounded-full
-                              ${c.status === 'Active' ? 'bg-emerald-500' : ''}
-                              ${c.status === 'Completed' ? 'bg-slate-400' : ''}
-                              ${c.status === 'Paused' ? 'bg-amber-500' : ''}
-                            `} />
-                            {c.status}
-                          </span>
-                        </td>
-                      </tr>
+                      <Link key={i} href="/analytics">
+                        <tr className="border-b border-slate-50 hover:bg-[#faf8f6] transition-colors cursor-pointer">
+                          <td className="px-4 py-3 font-bold text-slate-800">{c.name}</td>
+                          <td className="px-4 py-3 text-slate-500 font-medium">{c.platform}</td>
+                          <td className="px-4 py-3 font-bold text-slate-800">{c.spend}</td>
+                          <td className="px-4 py-3">
+                            <span className="px-2 py-0.5 bg-[#faf8f6] border border-slate-200 rounded-md text-xs font-bold text-slate-700">{c.roas}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold
+                              ${c.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : ''}
+                              ${c.status === 'Completed' ? 'bg-slate-100 text-slate-500' : ''}
+                              ${c.status === 'Paused' ? 'bg-amber-50 text-amber-600' : ''}
+                            `}>
+                              <span className={`w-1.5 h-1.5 rounded-full
+                                ${c.status === 'Active' ? 'bg-emerald-500' : ''}
+                                ${c.status === 'Completed' ? 'bg-slate-400' : ''}
+                                ${c.status === 'Paused' ? 'bg-amber-500' : ''}
+                              `} />
+                              {c.status}
+                            </span>
+                          </td>
+                        </tr>
+                      </Link>
                     ))}
                   </tbody>
                 </table>

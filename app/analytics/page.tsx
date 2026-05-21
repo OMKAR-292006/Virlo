@@ -43,10 +43,10 @@ const dataSets = {
       { name: 'Sun', engagement: 3490, reach: 4300 },
     ],
     campaignData: [
-      { name: 'Instagram Ads', spend: 4000, revenue: 8400 },
-      { name: 'Google Search', spend: 3000, revenue: 7398 },
-      { name: 'TikTok Influencers', spend: 2000, revenue: 5800 },
-      { name: 'Email Marketing', spend: 1000, revenue: 3908 },
+      { name: 'Instagram Ads', spend: 332000, revenue: 697200 },
+      { name: 'Google Search', spend: 249000, revenue: 614034 },
+      { name: 'TikTok Influencers', spend: 166000, revenue: 481400 },
+      { name: 'Email Marketing', spend: 83000, revenue: 324364 },
     ],
     demographicData: [
       { name: '18-24', value: 400 },
@@ -70,10 +70,10 @@ const dataSets = {
       { name: 'Wk 4', engagement: 22000, reach: 35000 },
     ],
     campaignData: [
-      { name: 'Instagram Ads', spend: 16400, revenue: 34440 },
-      { name: 'Google Search', spend: 12300, revenue: 30330 },
-      { name: 'TikTok Influencers', spend: 8200, revenue: 23780 },
-      { name: 'Email Marketing', spend: 4100, revenue: 16020 },
+      { name: 'Instagram Ads', spend: 1361200, revenue: 2858520 },
+      { name: 'Google Search', spend: 1020900, revenue: 2517390 },
+      { name: 'TikTok Influencers', spend: 680600, revenue: 1973740 },
+      { name: 'Email Marketing', spend: 340300, revenue: 1329660 },
     ],
     demographicData: [
       { name: '18-24', value: 1600 },
@@ -100,10 +100,10 @@ const dataSets = {
       { name: 'Jul', engagement: 94000, reach: 145000 },
     ],
     campaignData: [
-      { name: 'Instagram Ads', spend: 98000, revenue: 215000 },
-      { name: 'Google Search', spend: 75000, revenue: 185000 },
-      { name: 'TikTok Influencers', spend: 52000, revenue: 148000 },
-      { name: 'Email Marketing', spend: 28000, revenue: 95000 },
+      { name: 'Instagram Ads', spend: 8134000, revenue: 17845000 },
+      { name: 'Google Search', spend: 6225000, revenue: 15355000 },
+      { name: 'TikTok Influencers', spend: 4316000, revenue: 12284000 },
+      { name: 'Email Marketing', spend: 2324000, revenue: 7885000 },
     ],
     demographicData: [
       { name: '18-24', value: 8200 },

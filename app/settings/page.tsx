@@ -216,7 +216,7 @@ export default function SettingsPage() {
                     Perfect for small businesses scaling their marketing.
                   </p>
                   <div>
-                    <span className="text-2xl font-extrabold text-slate-800">$49</span>
+                    <span className="text-2xl font-extrabold text-slate-800">₹4,099</span>
                     <span className="text-slate-400 text-xs font-bold"> /mo</span>
                   </div>
                   <p className="text-[10px] text-slate-400 font-semibold">
@@ -271,9 +271,9 @@ export default function SettingsPage() {
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-xs">
                       {[
-                        { date: "Sep 15, 2023", amount: "$49.00", status: "Paid" },
-                        { date: "Aug 15, 2023", amount: "$49.00", status: "Paid" },
-                        { date: "Jul 15, 2023", amount: "$49.00", status: "Paid" },
+                        { date: "Sep 15, 2023", amount: "₹4,099", status: "Paid" },
+                        { date: "Aug 15, 2023", amount: "₹4,099", status: "Paid" },
+                        { date: "Jul 15, 2023", amount: "₹4,099", status: "Paid" },
                       ].map((invoice, i) => (
                         <tr key={i} className="hover:bg-[#faf8f6] transition-colors">
                           <td className="px-4 py-3 text-slate-500 font-semibold">{invoice.date}</td>

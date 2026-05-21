@@ -150,10 +150,25 @@ export default function CaptionGenerator() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="hidden sm:flex px-3.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors text-xs font-semibold items-center gap-1.5">
+            <button
+              onClick={() => {
+                const drafts = JSON.parse(localStorage.getItem('caption_drafts') || '[]');
+                if (drafts.length === 0) { alert('No saved drafts yet.'); return; }
+                const list = drafts.map((d: any, i: number) => `${i+1}. ${d.prompt} (${d.tone})`).join('\n');
+                alert('Saved Drafts:\n\n' + list);
+              }}
+              className="hidden sm:flex px-3.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors text-xs font-semibold items-center gap-1.5">
               <History size={14} /> History
             </button>
-            <button className="hidden sm:block px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
+            <button
+              onClick={() => {
+                if (!prompt.trim()) { alert('Nothing to save.'); return; }
+                const drafts = JSON.parse(localStorage.getItem('caption_drafts') || '[]');
+                drafts.unshift({ prompt, tone, platform, savedAt: new Date().toLocaleString() });
+                localStorage.setItem('caption_drafts', JSON.stringify(drafts.slice(0, 10)));
+                alert('Draft saved!');
+              }}
+              className="hidden sm:block px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
               Save Draft
             </button>
           </div>
@@ -319,7 +334,7 @@ export default function CaptionGenerator() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block leading-none mb-0.5">Budget</span>
-                      <span className="text-xs font-extrabold text-slate-900 leading-none">$50</span>
+                      <span className="text-xs font-extrabold text-slate-900 leading-none">₹4,200</span>
                     </div>
                     <button type="button" className="px-3 py-1.5 rounded-lg text-[10px] font-bold text-red-500 hover:bg-red-50 transition-colors">
                       Apply
@@ -344,7 +359,7 @@ export default function CaptionGenerator() {
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider block leading-none mb-0.5">Budget</span>
-                      <span className="text-xs font-extrabold text-slate-900 leading-none">$30</span>
+                      <span className="text-xs font-extrabold text-slate-900 leading-none">₹2,500</span>
                     </div>
                     <button type="button" className="px-3 py-1.5 rounded-lg text-[10px] font-bold text-red-500 hover:bg-red-50 transition-colors">
                       Apply

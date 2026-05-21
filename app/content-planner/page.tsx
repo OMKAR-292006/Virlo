@@ -560,7 +560,19 @@ export default function ContentPlanner() {
             >
               <Sparkles size={14} className="text-yellow-400" /> Create AI Plan
             </button>
-            <button className="hidden sm:block px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
+            <button className="hidden sm:block px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold"
+              onClick={() => {
+                const rows = ['Day,Date,Caption,Time,Platform'];
+                calendarData.forEach(day => {
+                  day.posts.filter(p => !p.isHolidayBanner && !p.empty).forEach(p => {
+                    rows.push(`${day.name},${day.date},"${(p.caption||'').replace(/"/g,'""')}",${p.time||''},${p.platform||''}`);
+                  });
+                });
+                const a = document.createElement('a');
+                a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(rows.join('\n'));
+                a.download = 'content-calendar.csv';
+                a.click();
+              }}>
               Export Calendar
             </button>
           </div>
@@ -577,9 +589,11 @@ export default function ContentPlanner() {
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#fbf5ee] border border-amber-200/50 rounded-full text-xs font-semibold text-amber-900">
-                ☕ National Coffee Day (Thu)
-              </span>
+              <Link href="/trend-engine">
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#fbf5ee] border border-amber-200/50 rounded-full text-xs font-semibold text-amber-900 hover:bg-amber-50 transition-colors cursor-pointer">
+                  ☕ National Coffee Day (Thu)
+                </span>
+              </Link>
               <button 
                 onClick={() => setNewPostModalOpen(true)}
                 className="px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-red-500/20 rounded-full text-xs font-bold transition-all flex items-center gap-1 shadow-sm"

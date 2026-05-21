@@ -35,7 +35,7 @@ export const mockCalendar = [
 ];
 
 export const mockCampaigns = [
-  { id: 'CAMP-001', name: 'Summer Sale 2024', platform: 'Instagram', spend: '$1,200', roas: '3.2x', status: 'Active' },
-  { id: 'CAMP-002', name: 'Q3 Brand Awareness', platform: 'LinkedIn', spend: '$850', roas: '1.8x', status: 'Active' },
-  { id: 'CAMP-003', name: 'Product Launch', platform: 'TikTok', spend: '$2,500', roas: '4.5x', status: 'Completed' },
+  { id: 'CAMP-001', name: 'Summer Sale 2024', platform: 'Instagram', spend: '₹1,00,000', roas: '3.2x', status: 'Active' },
+  { id: 'CAMP-002', name: 'Q3 Brand Awareness', platform: 'LinkedIn', spend: '₹70,000', roas: '1.8x', status: 'Active' },
+  { id: 'CAMP-003', name: 'Product Launch', platform: 'TikTok', spend: '₹2,10,000', roas: '4.5x', status: 'Completed' },
 ];

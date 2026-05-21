@@ -26,7 +26,7 @@ const SLIDES = [
     ],
   },
   {
-    headline: 'AI that writes, schedules, and optimizes — so you don\'t have to.',
+    headline: "AI that writes, schedules, and optimizes — so you don't have to.",
     sub: 'From captions to full weekly content calendars, Brand Matic handles the heavy lifting.',
     stats: [
       { label: 'Posts scheduled', value: '500+', unit: '/ month', color: 'text-amber-400', icon: Target },
@@ -38,7 +38,7 @@ const SLIDES = [
     sub: 'Continuous A/B testing powered by machine learning finds the combinations that convert.',
     stats: [
       { label: 'Avg. CTR', value: '4.8%', unit: 'platform', color: 'text-emerald-400', icon: Target },
-      { label: 'Ad spend saved', value: '$2.4K', unit: '/ month', color: 'text-blue-400', icon: TrendingUp },
+      { label: 'Ad spend saved', value: '₹2L', unit: '/ month', color: 'text-blue-400', icon: TrendingUp },
     ],
   },
 ];
@@ -51,7 +51,6 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [slide, setSlide] = useState(0);
 
-  // Auto-rotate slides
   React.useEffect(() => {
     const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 4000);
     return () => clearInterval(t);
@@ -78,149 +77,112 @@ export default function LoginPage() {
     }
   };
 
-  const inputClass = "w-full bg-[#111] border border-white/[0.1] rounded-lg pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors placeholder:text-neutral-600";
+  const inputClass = "w-full bg-[#111] border border-white/[0.1] rounded-lg pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors placeholder:text-neutral-600";
 
   return (
-    <div className="min-h-screen bg-black flex font-sans">
+    <div className="h-screen bg-black flex font-sans overflow-hidden">
 
-      {/* ── Left panel: form ── */}
-      <div className="w-full lg:w-[420px] xl:w-[480px] flex flex-col px-8 sm:px-12 py-10 shrink-0 relative z-10">
+      {/* Left panel */}
+      <div className="w-full lg:w-[420px] xl:w-[460px] flex flex-col px-8 sm:px-12 py-6 shrink-0 relative z-10 h-full">
 
         {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <Link href="/" className="flex items-center gap-2 group w-fit">
-            <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
-              <Sparkles size={16} className="text-white" />
-            </div>
-            <span className="font-bold text-sm tracking-tight text-white">Brand Matic</span>
-          </Link>
-        </motion.div>
-
-        {/* Form */}
-        <motion.div
-          className="flex-1 flex flex-col justify-center max-w-sm"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.5 }}
-        >
-          <h1 className="text-3xl font-bold text-white mb-1">Sign In</h1>
-          <p className="text-sm text-neutral-500 mb-8">Welcome back — let's pick up where you left off.</p>
-
-          {/* Demo hint */}
-          <div className="mb-6 p-3 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-start gap-2.5">
-            <Sparkles size={13} className="text-neutral-400 shrink-0 mt-0.5" />
-            <p className="text-xs text-neutral-400 leading-relaxed">
-              Demo: <span className="text-white font-medium">demo@brandmatic.ai</span> / <span className="text-white font-medium">demo1234</span>
-            </p>
+        <Link href="/" className="flex items-center gap-2 group w-fit mb-6">
+          <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
+            <Sparkles size={16} className="text-white" />
           </div>
+          <span className="font-bold text-sm tracking-tight text-white">Brand Matic</span>
+        </Link>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" size={15} />
-                <input
-                  type="email"
-                  required
-                  value={form.email}
-                  onChange={e => setForm({ ...form, email: e.target.value })}
-                  className={inputClass}
-                  placeholder="Enter your email"
-                />
-              </div>
+        {/* Form — centered vertically */}
+        <div className="flex-1 flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-2xl font-bold text-white mb-1">Sign In</h1>
+            <p className="text-sm text-neutral-500 mb-6">Welcome back — let's pick up where you left off.</p>
+
+            {/* Demo hint */}
+            <div className="mb-5 p-3 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-start gap-2.5">
+              <Sparkles size={13} className="text-neutral-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-neutral-400 leading-relaxed">
+                Demo: <span className="text-white font-medium">demo@brandmatic.ai</span> / <span className="text-white font-medium">demo1234</span>
+              </p>
             </div>
 
-            {/* Password */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Password</label>
-                <button type="button" className="text-xs text-neutral-500 hover:text-white transition-colors uppercase tracking-wider font-semibold">
-                  Forgot Password?
-                </button>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Email</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" size={14} />
+                  <input type="email" required value={form.email}
+                    onChange={e => setForm({ ...form, email: e.target.value })}
+                    className={inputClass} placeholder="Enter your email" />
+                </div>
               </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" size={15} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={form.password}
-                  onChange={e => setForm({ ...form, password: e.target.value })}
-                  className={`${inputClass} pr-10`}
-                  placeholder="Enter password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-neutral-300 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Password</label>
+                  <button type="button" className="text-xs text-neutral-500 hover:text-white transition-colors font-semibold">
+                    Forgot Password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-600" size={14} />
+                  <input type={showPassword ? 'text' : 'password'} required value={form.password}
+                    onChange={e => setForm({ ...form, password: e.target.value })}
+                    className={`${inputClass} pr-10`} placeholder="Enter password" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600 hover:text-neutral-300 transition-colors">
+                    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Error */}
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs"
-                >
-                  <AlertCircle size={13} className="shrink-0" />
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <AnimatePresence>
+                {error && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                    className="flex items-center gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                    <AlertCircle size={13} className="shrink-0" />
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-            {/* Submit */}
-            <motion.button
-              type="submit"
-              disabled={loading}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-3 mt-2 bg-blue-600 hover:bg-blue-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 uppercase tracking-wider"
-            >
-              {loading ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>Sign In <ArrowRight size={15} /></>
-              )}
-            </motion.button>
-          </form>
-        </motion.div>
+              <motion.button type="submit" disabled={loading}
+                whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                className="w-full py-2.5 mt-1 bg-blue-600 hover:bg-blue-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 uppercase tracking-wider">
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>Sign In <ArrowRight size={14} /></>
+                )}
+              </motion.button>
+            </form>
+          </motion.div>
+        </div>
 
-        {/* Footer */}
-        <motion.p
-          className="text-xs text-neutral-600"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
+        {/* Footer — pinned to bottom */}
+        <p className="text-xs text-neutral-600">
           Don't have an account?{' '}
           <Link href="/onboarding" className="text-white hover:text-neutral-300 font-semibold transition-colors">
             Sign up
           </Link>
-        </motion.p>
+        </p>
       </div>
 
-      {/* ── Right panel: slideshow ── */}
+      {/* Right panel — content top-center */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden">
-        {/* Background */}
         <div className="absolute inset-0 bg-[#0a0a0a]">
           <div className="absolute inset-0 opacity-20" style={{
             backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
             backgroundSize: '60px 60px',
           }} />
           <AnimatePresence>
-            <motion.div
-              key={slide}
-              className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_60%_40%,rgba(59,130,246,0.08),transparent)]"
+            <motion.div key={slide}
+              className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_30%,rgba(59,130,246,0.09),transparent)]"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
             />
@@ -232,67 +194,58 @@ export default function LoginPage() {
           </svg>
         </div>
 
-        {/* Floating stat cards — update with slide */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`card-a-${slide}`}
-            className="absolute top-[22%] right-12 bg-black/60 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 w-52"
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.45 }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              {React.createElement(SLIDES[slide].stats[0].icon, { size: 14, className: SLIDES[slide].stats[0].color })}
-              <p className="text-xs text-neutral-500">{SLIDES[slide].stats[0].label}</p>
-            </div>
-            <p className="text-2xl font-black text-white">
-              {SLIDES[slide].stats[0].value}{' '}
-              <span className="text-sm font-semibold text-neutral-400">{SLIDES[slide].stats[0].unit}</span>
-            </p>
-            <p className={`text-[10px] font-semibold mt-1 ${SLIDES[slide].stats[0].color}`}>↑ verified metric</p>
-          </motion.div>
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`card-b-${slide}`}
-            className="absolute top-[48%] right-20 bg-black/60 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 w-48"
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.45, delay: 0.1 }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              {React.createElement(SLIDES[slide].stats[1].icon, { size: 14, className: SLIDES[slide].stats[1].color })}
-              <p className="text-xs text-neutral-500">{SLIDES[slide].stats[1].label}</p>
-            </div>
-            <p className="text-2xl font-black text-white">{SLIDES[slide].stats[1].value}</p>
-            <p className={`text-[10px] font-semibold mt-1 ${SLIDES[slide].stats[1].color}`}>{SLIDES[slide].stats[1].unit}</p>
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Slide content */}
-        <div className="relative z-10 flex flex-col justify-end p-12 pb-14">
+        {/* Content — top-center */}
+        <div className="relative z-10 flex flex-col items-center justify-start pt-16 px-10 w-full">
           <AnimatePresence mode="wait">
-            <motion.div
-              key={slide}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-            >
-              <p className="text-2xl xl:text-3xl font-bold text-white leading-snug max-w-md mb-4">
+            <motion.div key={slide} className="text-center max-w-sm"
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}>
+              <p className="text-2xl xl:text-3xl font-bold text-white leading-snug mb-3">
                 {SLIDES[slide].headline}
               </p>
-              <p className="text-sm text-neutral-500 max-w-sm leading-relaxed">
+              <p className="text-sm text-neutral-500 leading-relaxed">
                 {SLIDES[slide].sub}
               </p>
             </motion.div>
           </AnimatePresence>
 
-          {/* Dot indicators + manual nav */}
+          {/* Stat cards */}
+          <div className="flex gap-4 mt-10">
+            <AnimatePresence mode="wait">
+              <motion.div key={`a-${slide}`}
+                className="bg-black/60 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 w-44"
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.45 }}>
+                <div className="flex items-center gap-2 mb-2">
+                  {React.createElement(SLIDES[slide].stats[0].icon, { size: 13, className: SLIDES[slide].stats[0].color })}
+                  <p className="text-[10px] text-neutral-500">{SLIDES[slide].stats[0].label}</p>
+                </div>
+                <p className="text-xl font-black text-white">
+                  {SLIDES[slide].stats[0].value}{' '}
+                  <span className="text-xs font-semibold text-neutral-400">{SLIDES[slide].stats[0].unit}</span>
+                </p>
+                <p className={`text-[9px] font-semibold mt-1 ${SLIDES[slide].stats[0].color}`}>verified metric</p>
+              </motion.div>
+            </AnimatePresence>
+            <AnimatePresence mode="wait">
+              <motion.div key={`b-${slide}`}
+                className="bg-black/60 backdrop-blur-md border border-white/[0.08] rounded-2xl p-4 w-44"
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.45, delay: 0.1 }}>
+                <div className="flex items-center gap-2 mb-2">
+                  {React.createElement(SLIDES[slide].stats[1].icon, { size: 13, className: SLIDES[slide].stats[1].color })}
+                  <p className="text-[10px] text-neutral-500">{SLIDES[slide].stats[1].label}</p>
+                </div>
+                <p className="text-xl font-black text-white">{SLIDES[slide].stats[1].value}</p>
+                <p className={`text-[9px] font-semibold mt-1 ${SLIDES[slide].stats[1].color}`}>{SLIDES[slide].stats[1].unit}</p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Dot indicators — below cards */}
           <div className="flex items-center gap-3 mt-8">
             {SLIDES.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setSlide(i)}
+              <button key={i} onClick={() => setSlide(i)}
                 className={`h-px rounded-full transition-all duration-300 ${i === slide ? 'w-8 bg-white' : 'w-4 bg-white/25 hover:bg-white/50'}`}
               />
             ))}
