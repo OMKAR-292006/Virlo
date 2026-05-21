@@ -150,20 +150,20 @@ export default function CaptionGenerator() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button className="px-3.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors text-xs font-semibold flex items-center gap-1.5">
+            <button className="hidden sm:flex px-3.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors text-xs font-semibold items-center gap-1.5">
               <History size={14} /> History
             </button>
-            <button className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
+            <button className="hidden sm:block px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
               Save Draft
             </button>
           </div>
         </header>
 
         {/* Content Body Grid */}
-        <div className="flex-1 overflow-hidden grid grid-cols-1 xl:grid-cols-12 max-w-[1300px] w-full mx-auto p-5 gap-6 items-stretch h-[calc(100vh-64px)]">
+        <div className="flex-1 overflow-y-auto grid grid-cols-1 xl:grid-cols-12 max-w-[1300px] w-full mx-auto p-4 sm:p-5 gap-5 sm:gap-6">
           
-          {/* Left Column (Generator Inputs & Ad Recommendations) */}
-          <div className="xl:col-span-7 flex flex-col h-full overflow-y-auto pr-1.5 space-y-5 scrollbar-thin">
+          {/* Left Column */}
+          <div className="xl:col-span-7 flex flex-col space-y-5">
 
             {/* Input Card Container */}
             <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-4">
@@ -356,8 +356,8 @@ export default function CaptionGenerator() {
 
           </div>
 
-          {/* Right Column (iOS Smartphone Mock Live Preview) */}
-          <div className="xl:col-span-5 flex flex-col items-center justify-center h-full overflow-hidden py-1 space-y-3 shrink-0">
+          {/* Right Column (iOS Smartphone Mock Live Preview) — hidden on mobile */}
+          <div className="hidden xl:flex xl:col-span-5 flex-col items-center justify-center overflow-hidden py-1 space-y-3">
 
             {/* iOS Phone Shell Mockup */}
             <div className="relative w-full max-w-[320px] h-[520px] bg-[#0c1017] border-[5px] border-[#181d26] rounded-[44px] p-2 shadow-[0_20px_40px_rgba(0,0,0,0.1),0_0_0_1px_rgba(0,0,0,0.05)] overflow-hidden select-none">

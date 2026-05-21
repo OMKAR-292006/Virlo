@@ -36,13 +36,16 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handle(e: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+        setCollapsed(true);
+      }
     }
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
@@ -172,7 +175,14 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
         {/* Profile section at bottom */}
         <div className="border-t border-white/[0.08] p-2 relative" ref={profileRef}>
           <button
-            onClick={() => setProfileOpen(o => !o)}
+            onClick={() => {
+              if (collapsed) {
+                setCollapsed(false);
+                setProfileOpen(true);
+              } else {
+                setProfileOpen(o => !o);
+              }
+            }}
             title={collapsed ? (user?.email || 'Profile') : undefined}
             className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:bg-white/5 ${collapsed ? 'justify-center' : ''}`}
           >
@@ -210,14 +220,14 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
                   <p className="text-[11px] text-neutral-500 truncate">{user?.email || 'demo@brandmatic.ai'}</p>
                 </div>
                 <div className="py-1">
-                  <Link href="/settings" onClick={() => setProfileOpen(false)}>
+                  <Link href="/settings" onClick={() => { setProfileOpen(false); setCollapsed(true); }}>
                     <div className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
                       <Settings size={14} /> Settings
                     </div>
                   </Link>
                 </div>
                 <div className="border-t border-white/[0.08] py-1">
-                  <button onClick={handleSignOut} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/[0.04] transition-colors">
+                  <button onClick={() => { handleSignOut(); setCollapsed(true); }} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/[0.04] transition-colors">
                     <LogOut size={14} /> Sign out
                   </button>
                 </div>

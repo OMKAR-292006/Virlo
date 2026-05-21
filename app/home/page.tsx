@@ -71,6 +71,8 @@ export default function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tasks, setTasks] = useState(initialTasks);
   const [aiTip, setAiTip] = useState(0);
+  const [addingTask, setAddingTask] = useState(false);
+  const [newTaskLabel, setNewTaskLabel] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
@@ -171,52 +173,6 @@ export default function HomePage() {
                     </div>
                     <div className="px-4 py-2.5 border-t border-white/[0.08]">
                       <button className="text-xs text-neutral-400 hover:text-white transition-colors font-medium">Mark all as read</button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Profile */}
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => { setProfileOpen(o => !o); setNotifOpen(false); }}
-                className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px] focus:outline-none"
-              >
-                <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
-                  <User size={14} className="text-slate-300" />
-                </div>
-              </button>
-              <AnimatePresence>
-                {profileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                    transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute right-0 mt-2 w-56 bg-[#0a0a0a] border border-white/[0.08] rounded-2xl shadow-2xl z-50 overflow-hidden"
-                  >
-                    <div className="px-4 py-3 border-b border-white/[0.08]">
-                      <p className="text-sm font-bold text-white">{USER.name}</p>
-                      <p className="text-xs text-neutral-500 mt-0.5">demo@brandmatic.ai</p>
-                    </div>
-                    <div className="py-1">
-                      {[
-                        { label: 'Settings', href: '/settings' },
-                      ].map(item => (
-                        <Link key={item.label} href={item.href} onClick={() => setProfileOpen(false)}>
-                          <div className="px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
-                            {item.label}
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="border-t border-white/[0.08] py-1">
-                      <Link href="/login" onClick={() => { signOut(auth); setProfileOpen(false); }}>
-                        <div className="px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/[0.04] transition-colors cursor-pointer">
-                          Sign out
-                        </div>
-                      </Link>
                     </div>
                   </motion.div>
                 )}
@@ -355,11 +311,10 @@ export default function HomePage() {
                     <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Today's Tasks</h2>
                     <span className="text-[11px] font-bold text-slate-400">{completedCount}/{tasks.length} done</span>
                   </div>
-                  {/* Progress bar */}
                   <div className="h-1.5 bg-slate-100 rounded-full mb-4 overflow-hidden">
                     <motion.div
                       className="h-full bg-emerald-500 rounded-full"
-                      animate={{ width: `${(completedCount / tasks.length) * 100}%` }}
+                      animate={{ width: tasks.length ? `${(completedCount / tasks.length) * 100}%` : '0%' }}
                       transition={{ duration: 0.4 }}
                     />
                   </div>
@@ -369,22 +324,68 @@ export default function HomePage() {
                         key={task.id}
                         onClick={() => toggleTask(task.id)}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors text-left group"
                       >
                         <motion.div animate={{ scale: task.done ? [1, 1.2, 1] : 1 }} transition={{ duration: 0.2 }}>
                           {task.done
                             ? <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                             : <Circle size={16} className="text-slate-300 shrink-0" />}
                         </motion.div>
-                        <span className={`text-xs font-semibold transition-colors ${task.done ? 'line-through text-slate-300' : 'text-slate-700'}`}>
+                        <span className={`flex-1 text-xs font-semibold transition-colors ${task.done ? 'line-through text-slate-300' : 'text-slate-700'}`}>
                           {task.label}
                         </span>
+                        <button
+                          onClick={e => { e.stopPropagation(); setTasks(prev => prev.filter(t => t.id !== task.id)); }}
+                          className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-400 transition-all"
+                        >
+                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                        </button>
                       </motion.button>
                     ))}
                   </div>
-                  <button className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-slate-700 font-semibold transition-colors py-1.5 rounded-xl hover:bg-slate-50">
-                    <Plus size={13} /> Add task
-                  </button>
+
+                  {/* Add task inline input */}
+                  <AnimatePresence>
+                    {addingTask ? (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-2"
+                      >
+                        <input
+                          autoFocus
+                          value={newTaskLabel}
+                          onChange={e => setNewTaskLabel(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && newTaskLabel.trim()) {
+                              setTasks(prev => [...prev, { id: Date.now(), label: newTaskLabel.trim(), done: false }]);
+                              setNewTaskLabel('');
+                              setAddingTask(false);
+                            }
+                            if (e.key === 'Escape') { setAddingTask(false); setNewTaskLabel(''); }
+                          }}
+                          onBlur={() => {
+                            if (newTaskLabel.trim()) {
+                              setTasks(prev => [...prev, { id: Date.now(), label: newTaskLabel.trim(), done: false }]);
+                            }
+                            setNewTaskLabel('');
+                            setAddingTask(false);
+                          }}
+                          placeholder="Task name… press Enter to add"
+                          className="w-full text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-slate-400 placeholder:text-slate-300 transition-colors"
+                        />
+                      </motion.div>
+                    ) : (
+                      <motion.button
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                        onClick={() => setAddingTask(true)}
+                        className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs text-slate-400 hover:text-slate-700 font-semibold transition-colors py-1.5 rounded-xl hover:bg-slate-50"
+                      >
+                        <Plus size={13} /> Add task
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
                 </div>
               </FadeUp>
 

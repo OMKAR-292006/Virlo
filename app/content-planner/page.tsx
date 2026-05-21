@@ -560,7 +560,7 @@ export default function ContentPlanner() {
             >
               <Sparkles size={14} className="text-yellow-400" /> Create AI Plan
             </button>
-            <button className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
+            <button className="hidden sm:block px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
               Export Calendar
             </button>
           </div>
@@ -570,22 +570,19 @@ export default function ContentPlanner() {
         <div className="flex-1 p-4 sm:p-6 flex flex-col overflow-hidden h-[calc(100vh-64px)] relative">
           
           {/* Header Row */}
-          <div className="flex items-center justify-between mb-5 shrink-0">
-            <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">{formatWeekLabel()}</h2>
-              {/* Week Navigator with Calendar Picker */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 shrink-0 gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <h2 className="text-lg sm:text-2xl font-extrabold tracking-tight text-slate-900">{formatWeekLabel()}</h2>
               <WeekPicker weekOffset={weekOffset} onOffsetChange={setWeekOffset} />
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* Holiday Badge */}
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#fbf5ee] border border-amber-200/50 rounded-full text-xs font-semibold text-amber-900 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#fbf5ee] border border-amber-200/50 rounded-full text-xs font-semibold text-amber-900">
                 ☕ National Coffee Day (Thu)
               </span>
-              {/* New Post Trigger */}
               <button 
                 onClick={() => setNewPostModalOpen(true)}
-                className="px-4 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-red-500/20 rounded-full text-xs font-bold tracking-tight transition-all flex items-center gap-1 shadow-sm"
+                className="px-3 py-1.5 bg-white hover:bg-red-50 text-red-500 hover:text-red-600 border border-red-500/20 rounded-full text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
               >
                 <Plus size={14} /> New Post
               </button>
@@ -594,7 +591,7 @@ export default function ContentPlanner() {
 
           {/* Calendar Horizontal Sliding Columns Container */}
           <motion.div 
-            className="flex-1 flex gap-5 overflow-x-auto pb-6 pt-1 items-stretch snap-x snap-mandatory scroll-smooth no-scrollbar"
+            className="flex-1 flex gap-3 sm:gap-5 overflow-x-auto pb-6 pt-1 items-stretch snap-x snap-mandatory scroll-smooth no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             initial="hidden"
             animate="visible"
@@ -603,7 +600,7 @@ export default function ContentPlanner() {
             {calendarData.map((dayPlan, i) => (
               <motion.div
                 key={i}
-                className="w-[280px] sm:w-[290px] shrink-0 flex flex-col h-full snap-start select-none"
+                className="w-[85vw] sm:w-[280px] md:w-[290px] shrink-0 flex flex-col h-full snap-start select-none"
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.4, 0, 0.2, 1] } } }}
               >
                 
