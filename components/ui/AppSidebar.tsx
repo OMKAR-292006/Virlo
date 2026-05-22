@@ -78,15 +78,14 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
           ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           transition-transform duration-300 lg:transition-none
         `}
-        animate={{ width: collapsed ? 56 : 256 }}
+        animate={{ width: (collapsed && !mobileOpen) ? 56 : 256 }}
         transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
         style={{ overflow: 'hidden' }}
       >
         {/* Header */}
         <div className="h-16 flex items-center border-b border-white/[0.08] shrink-0 px-3">
           <AnimatePresence mode="wait" initial={false}>
-            {collapsed ? (
-              /* Collapsed: only hamburger button, centered */
+            {(collapsed && !mobileOpen) ? (
               <motion.button
                 key="hamburger"
                 onClick={() => setCollapsed(false)}
@@ -98,7 +97,6 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
                 <HamburgerIcon />
               </motion.button>
             ) : (
-              /* Expanded: logo + name, hamburger on right */
               <motion.div
                 key="brand"
                 className="flex items-center gap-2 w-full"
@@ -133,10 +131,12 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
           </AnimatePresence>
         </div>
 
-        {/* Nav */}
+        {/* Nav — on mobile always show labels, on desktop respect collapsed */}
         <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
           {navItems.map((item, idx) => {
             const active = pathname === item.href;
+            // On mobile (mobileOpen), never collapse — always show full labels
+            const isCollapsed = collapsed && !mobileOpen;
             return (
               <motion.div
                 key={item.name}
@@ -146,28 +146,21 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
               >
                 <Link
                   href={item.href}
-                  onClick={() => { onMobileClose(); setCollapsed(true); }}
-                  title={collapsed ? item.name : undefined}
+                  onClick={() => {
+                    onMobileClose();
+                    if (window.innerWidth >= 1024) setCollapsed(true);
+                  }}
+                  title={isCollapsed ? item.name : undefined}
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                     ${active ? 'bg-white/10 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'}
-                    ${collapsed ? 'justify-center' : ''}
+                    ${isCollapsed ? 'justify-center' : ''}
                   `}
                 >
                   <item.icon size={18} className="shrink-0" />
-                  <AnimatePresence initial={false}>
-                    {!collapsed && (
-                      <motion.span
-                        className="whitespace-nowrap overflow-hidden"
-                        initial={{ opacity: 0, width: 0 }}
-                        animate={{ opacity: 1, width: 'auto' }}
-                        exit={{ opacity: 0, width: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {item.name}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
+                  {!isCollapsed && (
+                    <span className="whitespace-nowrap overflow-hidden">{item.name}</span>
+                  )}
                 </Link>
               </motion.div>
             );
@@ -176,66 +169,62 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
 
         {/* Profile section at bottom */}
         <div className="border-t border-white/[0.08] p-2 relative" ref={profileRef}>
-          <button
-            onClick={() => {
-              if (collapsed) {
-                setCollapsed(false);
-                setProfileOpen(true);
-              } else {
-                setProfileOpen(o => !o);
-              }
-            }}
-            title={collapsed ? (user?.email || 'Profile') : undefined}
-            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:bg-white/5 ${collapsed ? 'justify-center' : ''}`}
-          >
-            <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px] shrink-0">
-              <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
-                <User size={13} className="text-slate-300" />
-              </div>
-            </div>
-            <AnimatePresence initial={false}>
-              {!collapsed && (
-                <motion.div
-                  className="flex-1 min-w-0 text-left overflow-hidden"
-                  initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }} transition={{ duration: 0.2 }}
+          {(() => {
+            const isCollapsed = collapsed && !mobileOpen;
+            return (
+              <>
+                <button
+                  onClick={() => {
+                    if (isCollapsed) { setCollapsed(false); setProfileOpen(true); }
+                    else setProfileOpen(o => !o);
+                  }}
+                  title={isCollapsed ? (user?.email || 'Profile') : undefined}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:bg-white/5 ${isCollapsed ? 'justify-center' : ''}`}
                 >
-                  <p className="text-xs font-semibold text-white truncate">{user?.displayName || 'My Account'}</p>
-                  <p className="text-[10px] text-neutral-500 truncate">{user?.email || 'demo@brandmatic.ai'}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </button>
-
-          {/* Profile popup */}
-          <AnimatePresence>
-            {profileOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                transition={{ duration: 0.18 }}
-                className="absolute bottom-full left-2 right-2 mb-2 bg-[#0d0d0d] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl z-50"
-              >
-                <div className="px-4 py-3 border-b border-white/[0.08]">
-                  <p className="text-xs font-bold text-white truncate">{user?.displayName || 'My Account'}</p>
-                  <p className="text-[11px] text-neutral-500 truncate">{user?.email || 'demo@brandmatic.ai'}</p>
-                </div>
-                <div className="py-1">
-                  <Link href="/settings" onClick={() => { setProfileOpen(false); setCollapsed(true); }}>
-                    <div className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
-                      <Settings size={14} /> Settings
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px] shrink-0">
+                    <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                      <User size={13} className="text-slate-300" />
                     </div>
-                  </Link>
-                </div>
-                <div className="border-t border-white/[0.08] py-1">
-                  <button onClick={() => { handleSignOut(); setCollapsed(true); }} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/[0.04] transition-colors">
-                    <LogOut size={14} /> Sign out
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  </div>
+                  {!isCollapsed && (
+                    <div className="flex-1 min-w-0 text-left overflow-hidden">
+                      <p className="text-xs font-semibold text-white truncate">{user?.displayName || 'My Account'}</p>
+                      <p className="text-[10px] text-neutral-500 truncate">{user?.email || 'demo@brandmatic.ai'}</p>
+                    </div>
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {profileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute bottom-full left-2 right-2 mb-2 bg-[#0d0d0d] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl z-50"
+                    >
+                      <div className="px-4 py-3 border-b border-white/[0.08]">
+                        <p className="text-xs font-bold text-white truncate">{user?.displayName || 'My Account'}</p>
+                        <p className="text-[11px] text-neutral-500 truncate">{user?.email || 'demo@brandmatic.ai'}</p>
+                      </div>
+                      <div className="py-1">
+                        <Link href="/settings" onClick={() => { setProfileOpen(false); setCollapsed(true); onMobileClose(); }}>
+                          <div className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer">
+                            <Settings size={14} /> Settings
+                          </div>
+                        </Link>
+                      </div>
+                      <div className="border-t border-white/[0.08] py-1">
+                        <button onClick={() => { handleSignOut(); setCollapsed(true); }} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/[0.04] transition-colors">
+                          <LogOut size={14} /> Sign out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            );
+          })()}
         </div>
       </motion.aside>
     </>

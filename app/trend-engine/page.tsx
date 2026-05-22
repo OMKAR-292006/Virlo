@@ -76,10 +76,13 @@ export default function TrendEngine() {
 
       <main className="flex-1 flex flex-col min-w-0 z-10 h-screen overflow-hidden">
         {/* Black header bar */}
-        <header className="h-16 bg-[#050505] border-b border-white/[0.08] shrink-0 flex items-center px-4 sm:px-6 lg:px-8">
-          <button className="lg:hidden text-neutral-400 hover:text-white transition-colors" onClick={() => setSidebarOpen(true)}>
-            <Menu size={22} />
-          </button>
+        <header className="h-16 bg-[#050505] border-b border-white/[0.08] shrink-0 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-4">
+            <button className="lg:hidden text-neutral-400 hover:text-white transition-colors" onClick={() => setSidebarOpen(true)}>
+              <Menu size={22} />
+            </button>
+            <span className="text-white font-bold text-lg tracking-tight">Trend Engine</span>
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 lg:p-8">

@@ -122,16 +122,15 @@ export default function HomePage() {
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Top bar */}
         <header className="h-16 flex items-center justify-between px-5 lg:px-8 bg-[#050505] text-white border-b border-white/[0.08] shrink-0 z-20">
-          <button className="lg:hidden text-neutral-400 hover:text-white" onClick={() => setSidebarOpen(true)}>
-            <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
-              <rect width="22" height="2" rx="1" fill="currentColor"/>
-              <rect y="7" width="22" height="2" rx="1" fill="currentColor"/>
-              <rect y="14" width="22" height="2" rx="1" fill="currentColor"/>
-            </svg>
-          </button>
-          <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-yellow-400" />
-            <span className="text-sm font-semibold text-white">Home</span>
+          <div className="flex items-center gap-4">
+            <button className="lg:hidden text-neutral-400 hover:text-white" onClick={() => setSidebarOpen(true)}>
+              <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+                <rect width="22" height="2" rx="1" fill="currentColor"/>
+                <rect y="7" width="22" height="2" rx="1" fill="currentColor"/>
+                <rect y="14" width="22" height="2" rx="1" fill="currentColor"/>
+              </svg>
+            </button>
+            <span className="text-white font-bold text-lg tracking-tight">Home</span>
           </div>
           <div className="flex items-center gap-3">
             {/* Notification Bell */}

@@ -44,10 +44,13 @@ export default function StrategyExample() {
     <div className="min-h-screen bg-[#f6f2ee] text-slate-800 font-sans flex overflow-hidden selection:bg-black/10">
       <AppSidebar mobileOpen={sidebarOpen} onMobileClose={() => setSidebarOpen(false)} />
       <main className="flex-1 flex flex-col min-w-0 z-10 h-screen overflow-hidden">
-        <header className="h-16 bg-[#050505] border-b border-white/[0.08] shrink-0 flex items-center px-4 sm:px-6 lg:px-8">
-          <button className="lg:hidden text-neutral-400 hover:text-white transition-colors" onClick={() => setSidebarOpen(true)}>
-            <Menu size={22} />
-          </button>
+        <header className="h-16 bg-[#050505] border-b border-white/[0.08] shrink-0 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-4">
+            <button className="lg:hidden text-neutral-400 hover:text-white transition-colors" onClick={() => setSidebarOpen(true)}>
+              <Menu size={22} />
+            </button>
+            <span className="text-white font-bold text-lg tracking-tight">AI Strategy</span>
+          </div>
         </header>
         <div className="flex-1 overflow-y-auto p-4 lg:p-8">
           <div className="max-w-6xl mx-auto">
