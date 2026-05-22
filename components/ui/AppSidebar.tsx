@@ -46,7 +46,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
     function handle(e: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
         setProfileOpen(false);
-        setCollapsed(true);
+        // Only collapse if profile popup was open — don't collapse on random outside clicks
       }
     }
     document.addEventListener('mousedown', handle);

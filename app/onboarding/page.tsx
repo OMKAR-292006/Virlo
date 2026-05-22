@@ -11,6 +11,7 @@ import { ChevronRight, ChevronLeft, Sparkles, Building2, Users, Target, Palette,
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import AuthSuccess from "@/components/ui/AuthSuccess";
 
 const formSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -102,6 +103,7 @@ export default function OnboardingForm() {
         createdAt: new Date().toISOString(),
       });
       setIsSuccess(true);
+      setTimeout(() => router.push("/home"), 1800);
     } catch (err: any) {
       const code = err?.code || "";
       if (code === "auth/email-already-in-use") {
@@ -137,24 +139,7 @@ export default function OnboardingForm() {
   };
 
   if (isSuccess) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center p-4 font-sans">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full p-8 rounded-2xl bg-[#0d0d0d] border border-white/[0.08] text-center">
-          <div className="w-16 h-16 mx-auto bg-blue-600 rounded-full flex items-center justify-center mb-6">
-            <CheckCircle2 size={30} className="text-white" />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-3">You are All Set!</h2>
-          <p className="text-neutral-400 text-sm mb-8 leading-relaxed">
-            Your Brand Matic workspace is configured. Our AI is generating your first marketing plan.
-          </p>
-          <button onClick={() => router.push("/home")}
-            className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors">
-            Go to Dashboard
-          </button>
-        </motion.div>
-      </div>
-    );
+    return <AuthSuccess message="Setting up your workspace..." />;
   }
 
   return (

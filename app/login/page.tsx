@@ -7,6 +7,7 @@ import { Sparkles, Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, TrendingUp,
 import { motion, AnimatePresence } from 'framer-motion';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import AuthSuccess from '@/components/ui/AuthSuccess';
 
 const SLIDES = [
   {
@@ -56,6 +57,8 @@ export default function LoginPage() {
     return () => clearInterval(t);
   }, []);
 
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -63,7 +66,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, form.email, form.password);
-      router.push('/home');
+      setShowSuccess(true);
+      setTimeout(() => router.push('/home'), 1800);
     } catch (err: any) {
       const code = err?.code || '';
       if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
@@ -81,6 +85,7 @@ export default function LoginPage() {
 
   return (
     <div className="h-screen bg-black flex font-sans overflow-hidden">
+      <AnimatePresence>{showSuccess && <AuthSuccess message="Welcome back! Loading your workspace..." />}</AnimatePresence>
 
       {/* Left panel */}
       <div className="w-full lg:w-[420px] xl:w-[460px] flex flex-col px-8 sm:px-12 py-6 shrink-0 relative z-10 h-full">
