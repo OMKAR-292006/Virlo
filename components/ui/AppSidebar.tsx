@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, House, LayoutDashboard, Megaphone, CalendarDays, BarChart2, X, User, Settings, LogOut } from 'lucide-react';
+import { Sparkles, House, LayoutDashboard, Megaphone, CalendarDays, BarChart2, X, User, Settings, LogOut, TrendingUp, Lightbulb } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -15,6 +15,8 @@ const navItems = [
   { name: 'Campaigns', icon: Megaphone, href: '/caption-generator' },
   { name: 'AI Planner', icon: CalendarDays, href: '/content-planner' },
   { name: 'Analytics', icon: BarChart2, href: '/analytics' },
+  { name: 'Trend Engine', icon: TrendingUp, href: '/trend-engine' },
+  { name: 'AI Strategy', icon: Lightbulb, href: '/strategy-example' },
 ];
 
 function HamburgerIcon() {
