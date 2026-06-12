@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
 import AppSidebar from '@/components/ui/AppSidebar';
+import { saveCampaign } from '@/lib/campaigns';
 
 // Auto-compute the next occurrence of each festival from today
 function nextOccurrence(month: number, day: number): string {
@@ -75,6 +76,15 @@ export default function TrendEngine() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to generate festival campaign');
       setCampaignData(data.data);
+      // Save campaign to Firestore
+      if (user?.uid) {
+        saveCampaign(user.uid, {
+          name: `${festival.name} — ${businessName}`,
+          platform: 'Multi-platform',
+          type: 'festival',
+          status: 'Active',
+        }).catch(() => {});
+      }
     } catch (err: any) { setError(err.message); }
     finally { setLoading(false); }
   };

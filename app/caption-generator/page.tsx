@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
+import { saveCampaign } from '@/lib/campaigns';
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -96,6 +97,15 @@ export default function CaptionGenerator() {
       if (!response.ok) throw new Error(data.error || 'Failed to generate captions');
       setResult(data.data);
       setSelectedOptionIndex(0);
+      // Save campaign to Firestore
+      if (user?.uid) {
+        saveCampaign(user.uid, {
+          name: prompt.slice(0, 60),
+          platform,
+          type: 'caption',
+          status: 'Active',
+        }).catch(() => {});
+      }
     } catch (err: any) { 
       setError(err.message); 
     } finally { 

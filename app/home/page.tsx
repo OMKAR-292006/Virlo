@@ -17,6 +17,7 @@ import { db } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { subscribeToNotifications, markAllRead, markNotificationRead, Notification } from '@/lib/notifications';
+import { getCampaigns, Campaign } from '@/lib/campaigns';
 
 // ── Simulated user profile (would come from auth/onboarding in production) ──
 const USER = {
@@ -95,6 +96,7 @@ export default function HomePage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -104,6 +106,7 @@ export default function HomePage() {
       getDoc(doc(db, 'profiles', user.uid)).then(snap => {
         if (snap.exists()) setProfile(snap.data() as any);
       }).catch(() => {});
+      getCampaigns(user.uid, 5).then(setCampaigns).catch(() => {});
     }
   }, [user]);
 
@@ -478,25 +481,26 @@ export default function HomePage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockCampaigns.map((c, i) => (
+                    {(campaigns.length > 0 ? campaigns : mockCampaigns).map((c, i) => (
                       <Link key={i} href="/analytics">
                         <tr className="border-b border-slate-50 hover:bg-[#faf8f6] transition-colors cursor-pointer">
                           <td className="px-4 py-3 font-bold text-slate-800">{c.name}</td>
                           <td className="px-4 py-3 text-slate-500 font-medium">{c.platform}</td>
-                          <td className="px-4 py-3 font-bold text-slate-800">{c.spend}</td>
+                          <td className="px-4 py-3 font-bold text-slate-800">{'spend' in c ? (c as any).spend : '—'}</td>
                           <td className="px-4 py-3">
-                            <span className="px-2 py-0.5 bg-[#faf8f6] border border-slate-200 rounded-md text-xs font-bold text-slate-700">{c.roas}</span>
+                            <span className="px-2 py-0.5 bg-[#faf8f6] border border-slate-200 rounded-md text-xs font-bold text-slate-700">{'roas' in c ? (c as any).roas : '—'}</span>
                           </td>
                           <td className="px-4 py-3">
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold
                               ${c.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : ''}
                               ${c.status === 'Completed' ? 'bg-slate-100 text-slate-500' : ''}
-                              ${c.status === 'Paused' ? 'bg-amber-50 text-amber-600' : ''}
+                              ${'status' in c && c.status === 'Draft' ? 'bg-amber-50 text-amber-600' : ''}
+                              ${'status' in c && (c.status as string) === 'Paused' ? 'bg-amber-50 text-amber-600' : ''}
                             `}>
                               <span className={`w-1.5 h-1.5 rounded-full
                                 ${c.status === 'Active' ? 'bg-emerald-500' : ''}
                                 ${c.status === 'Completed' ? 'bg-slate-400' : ''}
-                                ${c.status === 'Paused' ? 'bg-amber-500' : ''}
+                                ${c.status === 'Draft' ? 'bg-amber-400' : ''}
                               `} />
                               {c.status}
                             </span>

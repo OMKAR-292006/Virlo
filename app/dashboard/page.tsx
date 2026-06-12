@@ -22,6 +22,7 @@ import { EngagementAreaChart } from '@/components/charts/EngagementAreaChart';
 import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
+import { getCampaigns, Campaign } from '@/lib/campaigns';
 
 const kpis = [
   { title: "Total Engagement", value: "2.4M", change: "+12.5%", isPositive: true, icon: TrendingUp, iconColorClass: "text-blue-400", iconBgClass: "bg-blue-400/10" },
@@ -35,10 +36,12 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chartRange, setChartRange] = useState('7d');
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
   useEffect(() => {
     if (user?.uid) {
       getProfile(user.uid).then(p => { if (p) setProfile(p); }).catch(() => {});
+      getCampaigns(user.uid, 10).then(setCampaigns).catch(() => {});
     }
   }, [user]);
 
@@ -241,30 +244,30 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockCampaigns.map((campaign) => (
-                      <Link key={campaign.id} href="/analytics">
+                    {(campaigns.length > 0 ? campaigns : mockCampaigns).map((c, i) => (
+                      <Link key={i} href="/analytics">
                         <tr className="border-b border-slate-100 hover:bg-[#faf8f6] transition-colors cursor-pointer">
-                          <td className="px-4 py-4 font-semibold text-slate-400">{campaign.id}</td>
-                          <td className="px-4 py-4 font-bold text-slate-800">{campaign.name}</td>
-                          <td className="px-4 py-4 text-slate-500 font-medium">{campaign.platform}</td>
-                          <td className="px-4 py-4 text-slate-800 font-bold">{campaign.spend}</td>
+                          <td className="px-4 py-4 font-semibold text-slate-400">{'id' in c ? (c as any).id : `CAMP-00${i+1}`}</td>
+                          <td className="px-4 py-4 font-bold text-slate-800">{c.name}</td>
+                          <td className="px-4 py-4 text-slate-500 font-medium">{c.platform}</td>
+                          <td className="px-4 py-4 text-slate-800 font-bold">{'spend' in c ? (c as any).spend : '—'}</td>
                           <td className="px-4 py-4">
                             <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-[#faf8f6] border border-slate-200 text-slate-800 font-bold text-xs">
-                              {campaign.roas}
+                              {'roas' in c ? (c as any).roas : '—'}
                             </span>
                           </td>
                           <td className="px-4 py-4">
                             <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#faf8f6] border border-slate-200
-                              ${campaign.status === 'Active' ? 'text-slate-800' : ''}
-                              ${campaign.status === 'Completed' ? 'text-slate-500' : ''}
-                              ${campaign.status === 'Paused' ? 'text-slate-400' : ''}
+                              ${c.status === 'Active' ? 'text-slate-800' : ''}
+                              ${c.status === 'Completed' ? 'text-slate-500' : ''}
+                              ${c.status === 'Draft' ? 'text-amber-600' : ''}
                             `}>
                               <span className={`w-1.5 h-1.5 rounded-full
-                                ${campaign.status === 'Active' ? 'bg-emerald-500' : ''}
-                                ${campaign.status === 'Completed' ? 'bg-slate-400' : ''}
-                                ${campaign.status === 'Paused' ? 'bg-amber-500' : ''}
+                                ${c.status === 'Active' ? 'bg-emerald-500' : ''}
+                                ${c.status === 'Completed' ? 'bg-slate-400' : ''}
+                                ${c.status === 'Draft' ? 'bg-amber-400' : ''}
                               `} />
-                              {campaign.status}
+                              {c.status}
                             </span>
                           </td>
                         </tr>
