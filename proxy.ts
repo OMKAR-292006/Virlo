@@ -7,7 +7,7 @@ const PROTECTED = ['/home', '/dashboard', '/analytics', '/settings', '/caption-g
 // Routes only for unauthenticated users
 const AUTH_ONLY = ['/login', '/onboarding'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check for Firebase auth session cookie (set by client after login)
