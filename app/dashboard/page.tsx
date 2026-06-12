@@ -256,8 +256,10 @@ export default function Dashboard() {
                 <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Recent Campaigns</h2>
                 <button
                   onClick={() => {
-                    const csv = ['Campaign ID,Name,Platform,Spend,ROAS,Status',
-                      ...mockCampaigns.map(c => `${c.id},${c.name},${c.platform},${c.spend},${c.roas},${c.status}`)
+                    const source = campaigns.length > 0 ? campaigns : mockCampaigns;
+                    const csv = [
+                      'ID,Name,Platform,Type,Status',
+                      ...source.map(c => `${(c as any).id ?? ''},${c.name},${c.platform},${'type' in c ? (c as any).type : ''},${c.status}`)
                     ].join('\n');
                     const a = document.createElement('a');
                     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);

@@ -17,6 +17,8 @@ import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
 import { saveCampaign } from '@/lib/campaigns';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -151,21 +153,25 @@ export default function CaptionGenerator() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => {
-                const drafts = JSON.parse(localStorage.getItem('caption_drafts') || '[]');
-                if (drafts.length === 0) { alert('No saved drafts yet.'); return; }
-                const list = drafts.map((d: any, i: number) => `${i+1}. ${d.prompt} (${d.tone})`).join('\n');
+              onClick={async () => {
+                if (!user?.uid) { alert('Sign in to view drafts.'); return; }
+                const snap = await getDoc(doc(db, 'caption_drafts', user.uid));
+                if (!snap.exists() || !snap.data().items?.length) { alert('No saved drafts yet.'); return; }
+                const list = snap.data().items.map((d: any, i: number) => `${i+1}. ${d.prompt} (${d.tone})`).join('\n');
                 alert('Saved Drafts:\n\n' + list);
               }}
               className="hidden sm:flex px-3.5 py-1.5 rounded-lg border border-white/[0.08] bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors text-xs font-semibold items-center gap-1.5">
               <History size={14} /> History
             </button>
             <button
-              onClick={() => {
+              onClick={async () => {
                 if (!prompt.trim()) { alert('Nothing to save.'); return; }
-                const drafts = JSON.parse(localStorage.getItem('caption_drafts') || '[]');
-                drafts.unshift({ prompt, tone, platform, savedAt: new Date().toLocaleString() });
-                localStorage.setItem('caption_drafts', JSON.stringify(drafts.slice(0, 10)));
+                if (!user?.uid) { alert('Sign in to save drafts.'); return; }
+                const ref = doc(db, 'caption_drafts', user.uid);
+                const snap = await getDoc(ref);
+                const existing = snap.exists() ? snap.data().items ?? [] : [];
+                const updated = [{ prompt, tone, platform, savedAt: new Date().toISOString() }, ...existing].slice(0, 10);
+                await setDoc(ref, { items: updated }, { merge: true });
                 alert('Draft saved!');
               }}
               className="hidden sm:block px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black transition-colors text-xs font-bold">
