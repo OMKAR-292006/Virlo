@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  Megaphone, CalendarDays, BarChart2, Settings, Sparkles,
-  TrendingUp, Users, MousePointerClick, DollarSign, Activity,
-  Menu, X
+  TrendingUp, Users, MousePointerClick, IndianRupee,
+  Menu
 } from 'lucide-react';
 import { PIE_COLORS } from '@/lib/mock-data';
 import { KpiCard } from '@/components/ui/KpiCard';
@@ -19,7 +18,7 @@ const dataSets = {
   '7d': {
     kpis: [
       { title: "Click-Through Rate", value: "4.8%", change: "+1.2%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
-      { title: "Cost Per Click", value: "₹70", change: "-₹10", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "Cost Per Click", value: "₹70", change: "-₹10", isPositive: true, icon: IndianRupee, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
       { title: "ROAS", value: "3.2x", change: "+0.4x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
       { title: "New Followers", value: "12,490", change: "+2,100", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
       { title: "Engagement Rate", value: "8.4%", change: "-0.5%", isPositive: false, icon: Activity, iconColorClass: "text-orange-500", iconBgClass: "bg-orange-50" },
@@ -49,7 +48,7 @@ const dataSets = {
   '30d': {
     kpis: [
       { title: "Click-Through Rate", value: "5.1%", change: "+1.8%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
-      { title: "Cost Per Click", value: "₹65", change: "-₹18", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "Cost Per Click", value: "₹65", change: "-₹18", isPositive: true, icon: IndianRupee, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
       { title: "ROAS", value: "3.6x", change: "+0.8x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
       { title: "New Followers", value: "48,290", change: "+8,400", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
       { title: "Engagement Rate", value: "9.2%", change: "+1.1%", isPositive: true, icon: Activity, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
@@ -76,7 +75,7 @@ const dataSets = {
   'all': {
     kpis: [
       { title: "Click-Through Rate", value: "5.6%", change: "+2.1%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
-      { title: "Cost Per Click", value: "₹60", change: "-₹22", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "Cost Per Click", value: "₹60", change: "-₹22", isPositive: true, icon: IndianRupee, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
       { title: "ROAS", value: "4.1x", change: "+1.2x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
       { title: "New Followers", value: "245,800", change: "+42,000", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
       { title: "Engagement Rate", value: "10.5%", change: "+2.4%", isPositive: true, icon: Activity, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
@@ -127,47 +126,22 @@ export default function AnalyticsDashboard() {
           </div>
         </header>
 
-        {/* Analytics Scrollable View */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
           <div className="max-w-5xl mx-auto space-y-4">
             
-            {/* Header Title */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                  <Activity size={24} className="text-[#050505]" /> Platform Analytics
-                </h1>
-                <p className="text-slate-500 text-xs font-semibold mt-1">Real-time performance metrics and AI insights</p>
-              </div>
-              <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm self-start sm:self-auto">
-                <button 
-                  onClick={() => setTimeRange('7d')}
-                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${
-                    timeRange === '7d' 
-                      ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' 
-                      : 'font-semibold text-slate-500 hover:text-slate-800'
-                  }`}
-                >
+            {/* Time range selector */}
+            <div className="flex justify-end">
+              <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-slate-200 shadow-sm">
+                <button onClick={() => setTimeRange('7d')}
+                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${timeRange === '7d' ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' : 'font-semibold text-slate-500 hover:text-slate-800'}`}>
                   7 Days
                 </button>
-                <button 
-                  onClick={() => setTimeRange('30d')}
-                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${
-                    timeRange === '30d' 
-                      ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' 
-                      : 'font-semibold text-slate-500 hover:text-slate-800'
-                  }`}
-                >
+                <button onClick={() => setTimeRange('30d')}
+                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${timeRange === '30d' ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' : 'font-semibold text-slate-500 hover:text-slate-800'}`}>
                   30 Days
                 </button>
-                <button 
-                  onClick={() => setTimeRange('all')}
-                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${
-                    timeRange === 'all' 
-                      ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' 
-                      : 'font-semibold text-slate-500 hover:text-slate-800'
-                  }`}
-                >
+                <button onClick={() => setTimeRange('all')}
+                  className={`px-4 py-1 text-xs transition-all duration-200 rounded-lg ${timeRange === 'all' ? 'font-bold text-slate-800 bg-[#faf8f6] border border-slate-200 shadow-sm' : 'font-semibold text-slate-500 hover:text-slate-800'}`}>
                   All Time
                 </button>
               </div>
@@ -214,4 +188,5 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
+
 

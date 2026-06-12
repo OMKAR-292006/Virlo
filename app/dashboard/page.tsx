@@ -6,13 +6,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Megaphone, 
   CalendarDays, 
-  BarChart2, 
-  Settings, 
-  Bell, 
-  User, 
   TrendingUp, 
   MousePointerClick, 
-  DollarSign, 
+  IndianRupee, 
   Users, 
   Sparkles, 
   Clock, 
@@ -28,12 +24,13 @@ import AppSidebar from '@/components/ui/AppSidebar';
 const kpis = [
   { title: "Total Engagement", value: "2.4M", change: "+12.5%", isPositive: true, icon: TrendingUp, iconColorClass: "text-blue-400", iconBgClass: "bg-blue-400/10" },
   { title: "Average CTR", value: "4.8%", change: "+1.2%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-emerald-400", iconBgClass: "bg-emerald-400/10" },
-  { title: "Overall ROAS", value: "3.2x", change: "+0.4x", isPositive: true, icon: DollarSign, iconColorClass: "text-purple-400", iconBgClass: "bg-purple-400/10" },
+  { title: "Overall ROAS", value: "3.2x", change: "+0.4x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-400", iconBgClass: "bg-purple-400/10" },
   { title: "New Followers", value: "12.4K", change: "+24%", isPositive: true, icon: Users, iconColorClass: "text-amber-400", iconBgClass: "bg-amber-400/10" },
 ];
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [chartRange, setChartRange] = useState('7d');
 
   return (
     <div className="min-h-screen bg-[#f6f2ee] text-slate-800 font-sans flex overflow-hidden selection:bg-black/10">
@@ -105,11 +102,14 @@ export default function Dashboard() {
                 <div className="p-4 sm:p-5 rounded-3xl bg-white border border-slate-200/80 shadow-sm">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Performance Overview</h2>
-                    <select className="bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl px-3 py-1.5 focus:outline-none">
-                      <option>Last 7 Days</option>
-                      <option>Last 30 Days</option>
-                      <option>This Month</option>
-                    </select>
+                  <select
+                    value={chartRange}
+                    onChange={e => setChartRange(e.target.value)}
+                    className="bg-white border border-slate-200 text-xs font-semibold text-slate-700 rounded-xl px-3 py-1.5 focus:outline-none cursor-pointer">
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d">Last 30 Days</option>
+                    <option value="month">This Month</option>
+                  </select>
                   </div>
                   <EngagementAreaChart data={performanceData} light={true} />
                 </div>

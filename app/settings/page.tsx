@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Menu, Check, Eye, EyeOff, Pencil, CreditCard
+  Menu, Check, Eye, EyeOff
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
@@ -120,17 +120,14 @@ export default function SettingsPage() {
                 {/* Avatar Column */}
                 <div className="flex flex-col items-center shrink-0 space-y-2">
                   <div className="relative">
-                    <img 
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150" 
-                      alt="Avatar" 
-                      className="w-20 h-20 rounded-full object-cover border border-slate-200"
-                    />
-                    <button className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-[#e52521] hover:bg-[#c81916] text-white flex items-center justify-center border-2 border-white shadow-sm cursor-pointer transition-colors">
-                      <Pencil size={12} className="stroke-[2.5]" />
-                    </button>
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center border-2 border-white shadow-sm">
+                      <span className="text-white font-black text-2xl">
+                        {form.firstName ? form.firstName[0].toUpperCase() : (user?.email?.[0]?.toUpperCase() || '?')}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-semibold max-w-[120px] text-center leading-normal">
-                    JPG, GIF or PNG, Max 2MB.
+                  <span className="text-[10px] text-slate-400 font-semibold text-center leading-normal">
+                    {user?.email}
                   </span>
                 </div>
 
