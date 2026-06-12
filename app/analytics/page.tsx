@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
-  TrendingUp, Users, MousePointerClick, IndianRupee,
+  TrendingUp, Users, MousePointerClick, IndianRupee, Activity,
   Menu
 } from 'lucide-react';
 import { PIE_COLORS } from '@/lib/mock-data';
