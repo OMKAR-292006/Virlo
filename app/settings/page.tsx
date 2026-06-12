@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Menu, Check, Eye, EyeOff
+  Menu, Check, Eye, EyeOff, CreditCard
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';

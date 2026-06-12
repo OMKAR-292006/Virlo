@@ -2,10 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { 
   Sparkles, Megaphone, CalendarDays, Clock, Plus, ChevronLeft, ChevronRight,
   Home, BarChart2, Settings, Menu, X,
-  Building2, Briefcase, Target, RefreshCcw
+  Building2, Briefcase, Target, RefreshCcw, Trash2, Save
 } from 'lucide-react';
 import { PlannerResponse } from '@/lib/gemini';
 import { motion, AnimatePresence } from 'framer-motion';

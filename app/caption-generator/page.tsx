@@ -4,11 +4,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   Sparkles, Megaphone, RefreshCcw, 
-  Copy, CheckCircle2,
-  History,
+  Copy, CheckCircle2, Heart, MessageCircle, Send, Bookmark,
+  History, ArrowRight,
   Smile, Briefcase, Flame, GraduationCap,
   Home, CalendarDays, BarChart2, Settings, Menu,
-  ChevronDown, TrendingUp, Target, Plus,
+  ChevronDown, TrendingUp, Compass, Target, Plus, Search,
   Play, User
 } from 'lucide-react';
 import { CaptionResponse } from '@/lib/gemini';
