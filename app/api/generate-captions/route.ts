@@ -1,28 +1,33 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { generateCaptions } from "@/lib/gemini";
+import { requireSession, handleApiError } from "@/lib/api-auth";
 
-function handleApiError(error: any) {
-  const msg: string = error?.message || '';
-  if (msg.includes('429') || msg.toLowerCase().includes('too many requests') || msg.toLowerCase().includes('quota')) {
-    return NextResponse.json({ error: 'Rate limit reached. Please wait a moment and try again.' }, { status: 429 });
-  }
-  return NextResponse.json({ error: msg || 'An unexpected error occurred' }, { status: 500 });
-}
+const VALID_TONES = ['Professional', 'Funny', 'Hype', 'Empathetic'];
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const unauth = requireSession(req);
+  if (unauth) return unauth;
+
   try {
     const body = await req.json();
     const { product, targetAudience, tone } = body;
+
     if (!product || !targetAudience || !tone) {
-      return NextResponse.json({ error: "Missing required fields: product, targetAudience, tone" }, { status: 400 });
+      return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
-    // Basic input length limits to prevent abuse
+    if (typeof product !== 'string' || typeof targetAudience !== 'string' || typeof tone !== 'string') {
+      return NextResponse.json({ error: "Invalid field types." }, { status: 400 });
+    }
     if (product.length > 2000 || targetAudience.length > 500) {
       return NextResponse.json({ error: "Input too long." }, { status: 400 });
     }
-    const captionsData = await generateCaptions({ product, targetAudience, tone });
-    return NextResponse.json({ success: true, data: captionsData });
-  } catch (error: any) {
+    if (!VALID_TONES.includes(tone)) {
+      return NextResponse.json({ error: "Invalid tone value." }, { status: 400 });
+    }
+
+    const data = await generateCaptions({ product, targetAudience, tone });
+    return NextResponse.json({ success: true, data });
+  } catch (error) {
     return handleApiError(error);
   }
 }
