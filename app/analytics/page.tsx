@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ const dataSets = {
   '7d': {
     kpis: [
       { title: "Click-Through Rate", value: "4.8%", change: "+1.2%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
-      { title: "Cost Per Click", value: "$0.84", change: "-$0.12", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "Cost Per Click", value: "₹70", change: "-₹10", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
       { title: "ROAS", value: "3.2x", change: "+0.4x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
       { title: "New Followers", value: "12,490", change: "+2,100", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
       { title: "Engagement Rate", value: "8.4%", change: "-0.5%", isPositive: false, icon: Activity, iconColorClass: "text-orange-500", iconBgClass: "bg-orange-50" },
@@ -49,7 +49,7 @@ const dataSets = {
   '30d': {
     kpis: [
       { title: "Click-Through Rate", value: "5.1%", change: "+1.8%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
-      { title: "Cost Per Click", value: "$0.78", change: "-$0.22", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "Cost Per Click", value: "₹65", change: "-₹18", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
       { title: "ROAS", value: "3.6x", change: "+0.8x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
       { title: "New Followers", value: "48,290", change: "+8,400", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
       { title: "Engagement Rate", value: "9.2%", change: "+1.1%", isPositive: true, icon: Activity, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
@@ -76,7 +76,7 @@ const dataSets = {
   'all': {
     kpis: [
       { title: "Click-Through Rate", value: "5.6%", change: "+2.1%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-blue-500", iconBgClass: "bg-blue-50" },
-      { title: "Cost Per Click", value: "$0.72", change: "-$0.28", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
+      { title: "Cost Per Click", value: "₹60", change: "-₹22", isPositive: true, icon: DollarSign, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
       { title: "ROAS", value: "4.1x", change: "+1.2x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-500", iconBgClass: "bg-purple-50" },
       { title: "New Followers", value: "245,800", change: "+42,000", isPositive: true, icon: Users, iconColorClass: "text-pink-500", iconBgClass: "bg-pink-50" },
       { title: "Engagement Rate", value: "10.5%", change: "+2.4%", isPositive: true, icon: Activity, iconColorClass: "text-emerald-500", iconBgClass: "bg-emerald-50" },
@@ -214,3 +214,4 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
+
