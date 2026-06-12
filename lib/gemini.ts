@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { logger } from "./logger";
 
 if (!process.env.GEMINI_API_KEY) {
-  console.warn("Missing GEMINI_API_KEY environment variable. API calls will fail.");
+  logger.warn("Missing GEMINI_API_KEY environment variable. API calls will fail.");
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -38,7 +39,7 @@ async function callGeminiWithFallback(prompt: string, expectJson: boolean = true
       });
       return result.response.text();
     } catch (error: any) {
-      console.warn(`[Gemini Fallback] Model ${modelName} failed:`, error.message);
+      logger.warn(`Gemini fallback: model ${modelName} failed`, { error: error.message });
       lastError = error;
     }
   }
@@ -83,7 +84,7 @@ export async function generateMarketingStrategy(params: StrategyParams): Promise
     responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(responseText) as StrategyResponse;
   } catch (error: any) {
-    console.error("Error generating strategy with Gemini:", error);
+    logger.error('generateMarketingStrategy failed', { error: error.message });
     throw new Error(`AI Error: ${error.message || "Failed to generate strategy"}`);
   }
 }
@@ -130,7 +131,7 @@ export async function generateCaptions(params: CaptionParams): Promise<CaptionRe
     responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(responseText) as CaptionResponse;
   } catch (error: any) {
-    console.error("Error generating captions with Gemini:", error);
+    logger.error('generateCaptions failed', { error: error.message });
     throw new Error(`AI Error: ${error.message || "Failed to generate captions"}`);
   }
 }
@@ -186,7 +187,7 @@ export async function generateWeeklyPlan(params: PlannerParams): Promise<Planner
     responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(responseText) as PlannerResponse;
   } catch (error: any) {
-    console.error("Error generating weekly plan with Gemini:", error);
+    logger.error('generateWeeklyPlan failed', { error: error.message });
     throw new Error(`AI Error: ${error.message || "Failed to generate weekly plan"}`);
   }
 }
@@ -230,7 +231,7 @@ export async function generateFestivalCampaign(params: FestivalParams): Promise<
     responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(responseText) as FestivalResponse;
   } catch (error: any) {
-    console.error("Error generating festival campaign with Gemini:", error);
+    logger.error('generateFestivalCampaign failed', { error: error.message });
     throw new Error(`AI Error: ${error.message || "Failed to generate festival campaign"}`);
   }
 }
