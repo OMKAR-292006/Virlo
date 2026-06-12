@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -20,6 +20,8 @@ import { performanceData, mockCalendar, mockCampaigns } from '@/lib/mock-data';
 import { KpiCard } from '@/components/ui/KpiCard';
 import { EngagementAreaChart } from '@/components/charts/EngagementAreaChart';
 import AppSidebar from '@/components/ui/AppSidebar';
+import { useAuth } from '@/lib/auth-context';
+import { getProfile } from '@/lib/user-profile';
 
 const kpis = [
   { title: "Total Engagement", value: "2.4M", change: "+12.5%", isPositive: true, icon: TrendingUp, iconColorClass: "text-blue-400", iconBgClass: "bg-blue-400/10" },
@@ -29,8 +31,19 @@ const kpis = [
 ];
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [chartRange, setChartRange] = useState('7d');
+  const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
+
+  useEffect(() => {
+    if (user?.uid) {
+      getProfile(user.uid).then(p => { if (p) setProfile(p); }).catch(() => {});
+    }
+  }, [user]);
+
+  const businessName = profile?.businessName || user?.displayName || 'your business';
+  const industry = profile?.industry || 'your industry';
 
   return (
     <div className="min-h-screen bg-[#f6f2ee] text-slate-800 font-sans flex overflow-hidden selection:bg-black/10">
@@ -127,7 +140,7 @@ export default function Dashboard() {
                           <div className="text-slate-500 mb-2 group-hover:text-blue-500 transition-colors"><CalendarDays size={18} /></div>
                           <h4 className="text-sm font-semibold mb-1 text-slate-800">Upcoming Festival</h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            Diwali is approaching. AI suggests starting campaign creatives 14 days in advance.
+                            Plan your next festival campaign early. AI suggests starting creatives at least 14 days in advance.
                           </p>
                         </div>
                       </Link>
@@ -136,7 +149,7 @@ export default function Dashboard() {
                           <div className="text-slate-500 mb-2 group-hover:text-emerald-500 transition-colors"><Clock size={18} /></div>
                           <h4 className="text-sm font-semibold mb-1 text-slate-800">Best Posting Time</h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            Your audience is most active on Thursdays between 6 PM - 8 PM IST.
+                            Optimize your {industry} content schedule. Consistent posting boosts reach by up to 3x.
                           </p>
                         </div>
                       </Link>
@@ -145,7 +158,7 @@ export default function Dashboard() {
                           <div className="text-slate-500 mb-2 group-hover:text-purple-500 transition-colors"><Target size={18} /></div>
                           <h4 className="text-sm font-semibold mb-1 text-slate-800">Ad Optimization</h4>
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            Increase budget on "Summer Sale 2024" by 20% to maximize current high ROAS.
+                            Review your active campaigns for {businessName} and boost the top performer by 20%.
                           </p>
                         </div>
                       </Link>

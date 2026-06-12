@@ -12,7 +12,7 @@ import AppSidebar from '@/components/ui/AppSidebar';
 import { mockCalendar, mockCampaigns, performanceData } from '@/lib/mock-data';
 import { EngagementAreaChart } from '@/components/charts/EngagementAreaChart';
 import { useAuth } from '@/lib/auth-context';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -40,7 +40,7 @@ const quickActions = [
 ];
 
 // ── Daily tasks ─────────────────────────────────────────────────────────────
-const initialTasks = [
+const DEFAULT_TASKS = [
   { id: 1, label: 'Review AI-generated content plan', done: false },
   { id: 2, label: 'Approve 3 scheduled posts', done: false },
   { id: 3, label: 'Check campaign ROAS', done: true },
@@ -70,7 +70,23 @@ function FadeUp({ children, delay = 0, className }: { children: React.ReactNode;
 export default function HomePage() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState(DEFAULT_TASKS);
+
+  // Load tasks from Firestore
+  useEffect(() => {
+    if (!user?.uid) return;
+    getDoc(doc(db, 'tasks', user.uid)).then(snap => {
+      if (snap.exists()) setTasks(snap.data().items ?? DEFAULT_TASKS);
+    }).catch(() => {});
+  }, [user]);
+
+  // Save tasks to Firestore whenever they change
+  const saveTasks = (updated: typeof DEFAULT_TASKS) => {
+    setTasks(updated);
+    if (user?.uid) {
+      setDoc(doc(db, 'tasks', user.uid), { items: updated }, { merge: true }).catch(() => {});
+    }
+  };
   const [aiTip, setAiTip] = useState(0);
   const [addingTask, setAddingTask] = useState(false);
   const [newTaskLabel, setNewTaskLabel] = useState('');
@@ -124,7 +140,7 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, []);
 
-  const toggleTask = (id: number) => setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const toggleTask = (id: number) => saveTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t));
   const completedCount = tasks.filter(t => t.done).length;
 
   return (
@@ -352,7 +368,7 @@ export default function HomePage() {
                           {task.label}
                         </span>
                         <button
-                          onClick={e => { e.stopPropagation(); setTasks(prev => prev.filter(t => t.id !== task.id)); }}
+                          onClick={e => { e.stopPropagation(); saveTasks(tasks.filter(t => t.id !== task.id)); }}
                           className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-400 transition-all"
                         >
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
@@ -376,7 +392,7 @@ export default function HomePage() {
                           onChange={e => setNewTaskLabel(e.target.value)}
                           onKeyDown={e => {
                             if (e.key === 'Enter' && newTaskLabel.trim()) {
-                              setTasks(prev => [...prev, { id: Date.now(), label: newTaskLabel.trim(), done: false }]);
+                              saveTasks([...tasks, { id: Date.now(), label: newTaskLabel.trim(), done: false }]);
                               setNewTaskLabel('');
                               setAddingTask(false);
                             }
@@ -384,7 +400,7 @@ export default function HomePage() {
                           }}
                           onBlur={() => {
                             if (newTaskLabel.trim()) {
-                              setTasks(prev => [...prev, { id: Date.now(), label: newTaskLabel.trim(), done: false }]);
+                              saveTasks([...tasks, { id: Date.now(), label: newTaskLabel.trim(), done: false }]);
                             }
                             setNewTaskLabel('');
                             setAddingTask(false);

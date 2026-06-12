@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile, updateProfile, UserProfile } from '@/lib/user-profile';
-import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
+import { updatePassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
 function Toggle({ defaultOn = false }: { defaultOn?: boolean }) {
@@ -202,95 +202,19 @@ export default function SettingsPage() {
             >
               <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider pb-3 border-b border-slate-100">Billing & Plan</h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Growth Plan Box */}
-                <div className="bg-[#faf8f6] border border-slate-200 rounded-2xl p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-slate-800">Growth Plan</span>
-                    <span className="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-100 uppercase tracking-wider">
-                      Active
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">
-                    Perfect for small businesses scaling their marketing.
+              <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+                  <CreditCard size={24} className="text-slate-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-700">Billing coming soon</p>
+                  <p className="text-xs text-slate-400 font-semibold mt-1 max-w-xs leading-relaxed">
+                    Subscription management and invoice history will be available here once billing is set up.
                   </p>
-                  <div>
-                    <span className="text-2xl font-extrabold text-slate-800">₹4,099</span>
-                    <span className="text-slate-400 text-xs font-bold"> /mo</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 font-semibold">
-                    Next billing date: Oct 15, 2023
-                  </p>
-                  <div className="flex gap-3 pt-2">
-                    <button className="flex-1 bg-white border border-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition-colors">
-                      Cancel
-                    </button>
-                    <button className="flex-1 bg-[#231f20] hover:bg-[#1a1718] text-white text-xs font-bold py-2 rounded-xl transition-colors">
-                      Upgrade
-                    </button>
-                  </div>
                 </div>
-
-                {/* Payment Method Box */}
-                <div className="bg-[#faf8f6] border border-slate-200 rounded-2xl p-5 space-y-4 flex flex-col">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-slate-800">Payment Method</span>
-                    <CreditCard size={16} className="text-slate-400" />
-                  </div>
-                  <div className="bg-white border border-slate-100 rounded-xl p-3 flex items-center gap-3 shadow-sm mt-2">
-                    <div className="px-2 py-1 bg-blue-50 text-blue-600 text-[9px] font-extrabold rounded-md border border-blue-100">
-                      VISA
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-800">Visa ending in 1234</p>
-                      <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Expires 12/25</p>
-                    </div>
-                  </div>
-                  <div className="mt-auto pt-4">
-                    <button className="w-full bg-white border border-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl hover:bg-slate-50 transition-colors">
-                      Update Payment Method
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Invoice History Sub-section */}
-              <div className="space-y-3 pt-2">
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Invoice History</h3>
-                
-                <div className="overflow-hidden border border-slate-200 rounded-2xl bg-white">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-[#faf8f6] border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                        <th className="px-4 py-3">Date</th>
-                        <th className="px-4 py-3">Amount</th>
-                        <th className="px-4 py-3">Status</th>
-                        <th className="px-4 py-3 text-right">Invoice</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 text-xs">
-                      {[
-                        { date: "Sep 15, 2023", amount: "₹4,099", status: "Paid" },
-                        { date: "Aug 15, 2023", amount: "₹4,099", status: "Paid" },
-                        { date: "Jul 15, 2023", amount: "₹4,099", status: "Paid" },
-                      ].map((invoice, i) => (
-                        <tr key={i} className="hover:bg-[#faf8f6] transition-colors">
-                          <td className="px-4 py-3 text-slate-500 font-semibold">{invoice.date}</td>
-                          <td className="px-4 py-3 text-slate-800 font-bold">{invoice.amount}</td>
-                          <td className="px-4 py-3">
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                              {invoice.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            {/* Empty as in reference or can have a small download link */}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <span className="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                  In Progress
+                </span>
               </div>
             </motion.div>
 
