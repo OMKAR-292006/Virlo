@@ -2,14 +2,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { 
-  Sparkles, Megaphone, Wand2, RefreshCcw, 
-  Copy, CheckCircle2, Heart, MessageCircle, Send, Bookmark,
-  History, Download, ArrowRight,
-  Smile, Briefcase, Flame, GraduationCap, Trash2,
-  Home, CalendarDays, BarChart2, Settings, Menu, X,
-  ChevronDown, TrendingUp, Compass, Target, Plus, Search,
+  Sparkles, Megaphone, RefreshCcw, 
+  Copy, CheckCircle2,
+  History,
+  Smile, Briefcase, Flame, GraduationCap,
+  Home, CalendarDays, BarChart2, Settings, Menu,
+  ChevronDown, TrendingUp, Target, Plus,
   Play, User
 } from 'lucide-react';
 import { CaptionResponse } from '@/lib/gemini';
@@ -34,15 +33,6 @@ const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function CaptionGenerator() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const pathname = usePathname();
-
-  const navItems = [
-    { name: 'Dashboard', icon: Home, href: '/dashboard' },
-    { name: 'Campaigns', icon: Megaphone, href: '/caption-generator' },
-    { name: 'AI Planner', icon: CalendarDays, href: '/content-planner' },
-    { name: 'Analytics', icon: BarChart2, href: '/analytics' },
-    { name: 'Settings', icon: Settings, href: '/settings' },
-  ];
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +57,7 @@ export default function CaptionGenerator() {
         if (p) {
           setPrompt(`${p.businessName || 'Our brand'} — ${p.industry || ''} — targeting ${p.targetAudience || 'our audience'}.`);
         }
-      });
+      }).catch(() => {});
     }
   }, [user]);
 

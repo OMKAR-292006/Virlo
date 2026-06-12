@@ -20,7 +20,7 @@ export default function StrategyExample() {
     if (user?.uid) {
       getProfile(user.uid).then(p => {
         if (p) setFormData(f => ({ ...f, businessName: p.businessName || '', industry: p.industry || '', targetAudience: p.targetAudience || '' }));
-      });
+      }).catch(() => {});
     }
   }, [user]);
 

@@ -2,11 +2,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { 
   Sparkles, Megaphone, CalendarDays, Clock, Plus, ChevronLeft, ChevronRight,
-  Home, BarChart2, Settings, Menu, X, Check, Camera, ThumbsUp, HelpCircle,
-  Building2, Briefcase, Target, RefreshCcw, Trash2, ArrowRight, Save, Trash
+  Home, BarChart2, Settings, Menu, X,
+  Building2, Briefcase, Target, RefreshCcw
 } from 'lucide-react';
 import { PlannerResponse } from '@/lib/gemini';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -292,7 +291,7 @@ export default function ContentPlanner() {
             targetAudience: p.targetAudience || '',
           });
         }
-      });
+      }).catch(() => {});
     }
   }, [user]);
 

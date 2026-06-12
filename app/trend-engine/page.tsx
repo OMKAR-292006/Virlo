@@ -36,7 +36,7 @@ export default function TrendEngine() {
           setBusinessName(p.businessName || '');
           setIndustry(p.industry || '');
         }
-      });
+      }).catch(() => {});
     }
   }, [user]);
   const [selectedFestival, setSelectedFestival] = useState<typeof UPCOMING_FESTIVALS[0] | null>(null);

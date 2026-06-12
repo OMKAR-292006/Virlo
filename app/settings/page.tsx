@@ -2,11 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
-  Home, Megaphone, CalendarDays, BarChart2, Settings,
-  Sparkles, User, Bell, Menu, X, ChevronRight, Check,
-  Eye, EyeOff, Pencil, CreditCard
+  Menu, Check, Eye, EyeOff, Pencil, CreditCard
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
@@ -35,7 +32,6 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', newPassword: '' });
-  const pathname = usePathname();
 
   useEffect(() => {
     if (user?.uid) {
@@ -51,6 +47,8 @@ export default function SettingsPage() {
         } else {
           setForm(f => ({ ...f, email: user.email || '' }));
         }
+      }).catch(() => {
+        setForm(f => ({ ...f, email: user.email || '' }));
       });
     }
   }, [user]);
@@ -65,11 +63,15 @@ export default function SettingsPage() {
       });
       if (form.newPassword && form.newPassword.length >= 6) {
         await updatePassword(user, form.newPassword);
+        setForm(f => ({ ...f, newPassword: '' }));
       }
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-    } catch (err) {
-      console.error('Save error:', err);
+    } catch (err: any) {
+      const msg = err?.code === 'auth/requires-recent-login'
+        ? 'Please sign out and sign back in to change your password.'
+        : 'Failed to save. Please try again.';
+      alert(msg);
     } finally {
       setSaving(false);
     }

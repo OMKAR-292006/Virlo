@@ -54,8 +54,12 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
   }, []);
 
   const handleSignOut = async () => {
-    await signOut(auth);
-    router.push('/login');
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch {
+      router.push('/login');
+    }
   };
 
   return (

@@ -85,7 +85,7 @@ export default function HomePage() {
     if (user?.uid) {
       getDoc(doc(db, 'profiles', user.uid)).then(snap => {
         if (snap.exists()) setProfile(snap.data() as any);
-      });
+      }).catch(() => {});
     }
   }, [user]);
 

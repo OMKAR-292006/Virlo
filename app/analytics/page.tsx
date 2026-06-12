@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { 
-  Home, Megaphone, CalendarDays, BarChart2, Settings, Sparkles,
+  Megaphone, CalendarDays, BarChart2, Settings, Sparkles,
   TrendingUp, Users, MousePointerClick, DollarSign, Activity,
   Menu, X
 } from 'lucide-react';
@@ -15,14 +14,6 @@ import { DemographicsChart } from '@/components/charts/DemographicsChart';
 import { CampaignPerformanceChart } from '@/components/charts/CampaignPerformanceChart';
 import { motion } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
-
-const navItems = [
-  { name: 'Dashboard', icon: Home, href: '/dashboard' },
-  { name: 'Campaigns', icon: Megaphone, href: '/caption-generator' },
-  { name: 'AI Planner', icon: CalendarDays, href: '/content-planner' },
-  { name: 'Analytics', icon: BarChart2, href: '/analytics' },
-  { name: 'Settings', icon: Settings, href: '/settings' },
-];
 
 const dataSets = {
   '7d': {
@@ -117,7 +108,6 @@ const dataSets = {
 export default function AnalyticsDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('7d');
-  const pathname = usePathname();
 
   const currentData = dataSets[timeRange];
 
