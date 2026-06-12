@@ -9,7 +9,7 @@ import {
   User, CheckCircle2, Circle, Plus, RefreshCcw, Flame,
 } from 'lucide-react';
 import AppSidebar from '@/components/ui/AppSidebar';
-import { mockCalendar, mockCampaigns, performanceData } from '@/lib/mock-data';
+import { mockCampaigns, performanceData } from '@/lib/mock-data';
 import { EngagementAreaChart } from '@/components/charts/EngagementAreaChart';
 import { useAuth } from '@/lib/auth-context';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -93,18 +93,40 @@ export default function HomePage() {
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [kpiData, setKpiData] = useState<KpiData | null>(null);
+  const [upcomingPosts, setUpcomingPosts] = useState<{ day: string; caption: string; time: string; platform: string }[]>([]);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // Load Firestore profile
+  // Load Firestore profile, campaigns, KPIs, and this week's calendar posts
   useEffect(() => {
-    if (user?.uid) {
-      getDoc(doc(db, 'profiles', user.uid)).then(snap => {
-        if (snap.exists()) setProfile(snap.data() as any);
-      }).catch(() => {});
-      getCampaigns(user.uid, 5).then(setCampaigns).catch(() => {});
-      getKpis(user.uid).then(setKpiData).catch(() => {});
-    }
+    if (!user?.uid) return;
+    getDoc(doc(db, 'profiles', user.uid)).then(snap => {
+      if (snap.exists()) setProfile(snap.data() as any);
+    }).catch(() => {});
+    getCampaigns(user.uid, 5).then(setCampaigns).catch(() => {});
+    getKpis(user.uid).then(setKpiData).catch(() => {});
+
+    // Derive this week's Monday key
+    const today = new Date();
+    const dow = today.getDay();
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    mon.setHours(0, 0, 0, 0);
+    const weekKey = mon.toISOString().split('T')[0];
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    getDoc(doc(db, 'calendar', user.uid, 'weeks', weekKey)).then(snap => {
+      if (!snap.exists()) return;
+      const calDays: { name: string; date: string; posts: any[] }[] = snap.data().days ?? [];
+      const posts = calDays
+        .flatMap((d, i) =>
+          d.posts
+            .filter((p: any) => !p.empty && !p.isHolidayBanner && p.caption)
+            .map((p: any) => ({ day: dayNames[i], caption: p.caption, time: p.time || '', platform: p.platform || 'instagram' }))
+        )
+        .slice(0, 4);
+      if (posts.length > 0) setUpcomingPosts(posts);
+    }).catch(() => {});
   }, [user]);
 
   // Subscribe to real-time notifications
@@ -435,7 +457,7 @@ export default function HomePage() {
                     <Link href="/content-planner" className="text-xs text-slate-400 hover:text-slate-700 font-semibold transition-colors">View all</Link>
                   </div>
                   <div className="space-y-2">
-                    {mockCalendar.slice(0, 4).map((item, i) => (
+                    {upcomingPosts.length > 0 ? upcomingPosts.map((item, i) => (
                       <Link key={i} href="/content-planner">
                         <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
                           <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-[#faf8f6] border border-slate-200 shrink-0">
@@ -443,19 +465,20 @@ export default function HomePage() {
                             <Clock size={9} className="text-slate-400 mt-0.5" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-slate-800 truncate">{item.title}</p>
-                            <p className="text-[10px] text-slate-400 font-semibold">{item.type} · {item.time}</p>
+                            <p className="text-xs font-bold text-slate-800 truncate">{item.caption}</p>
+                            <p className="text-[10px] text-slate-400 font-semibold capitalize">{item.platform} · {item.time}</p>
                           </div>
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0
-                            ${item.status === 'Scheduled' ? 'bg-emerald-50 text-emerald-600' : ''}
-                            ${item.status === 'Draft' ? 'bg-slate-100 text-slate-500' : ''}
-                            ${item.status === 'AI Generating' ? 'bg-blue-50 text-blue-600' : ''}
-                          `}>
-                            {item.status}
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full shrink-0 bg-emerald-50 text-emerald-600">
+                            Scheduled
                           </span>
                         </div>
                       </Link>
-                    ))}
+                    )) : (
+                      <div className="text-center py-6">
+                        <p className="text-xs text-slate-400 font-semibold">No posts scheduled this week.</p>
+                        <Link href="/content-planner" className="text-xs text-blue-500 font-bold hover:underline mt-1 inline-block">Create a plan →</Link>
+                      </div>
+                    )}
                   </div>
                 </div>
               </FadeUp>
