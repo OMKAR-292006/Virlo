@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import AnimatedLayout from "../components/animation/AnimatedLayout";
 import { AuthProvider } from "../lib/auth-context";
+import { ToastProvider } from "../components/ui/Toast";
+import { ErrorBoundary } from "../components/ui/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +33,11 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <AnimatedLayout>{children}</AnimatedLayout>
+          <ToastProvider>
+            <ErrorBoundary>
+              <AnimatedLayout>{children}</AnimatedLayout>
+            </ErrorBoundary>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

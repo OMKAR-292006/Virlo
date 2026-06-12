@@ -13,6 +13,7 @@ import { getKpis, saveKpis, KpiData } from '@/lib/kpis';
 import { getAnalytics, saveAnalytics } from '@/lib/analytics';
 import { updatePassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { useToast } from '@/components/ui/Toast';
 
 function Toggle({ defaultOn = false }: { defaultOn?: boolean }) {
   const [on, setOn] = useState(defaultOn);
@@ -28,6 +29,7 @@ function Toggle({ defaultOn = false }: { defaultOn?: boolean }) {
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -88,7 +90,7 @@ export default function SettingsPage() {
       const msg = err?.code === 'auth/requires-recent-login'
         ? 'Please sign out and sign back in to change your password.'
         : 'Failed to save. Please try again.';
-      alert(msg);
+      toast(msg, 'error');
     } finally {
       setSaving(false);
     }
@@ -102,7 +104,7 @@ export default function SettingsPage() {
       setKpiSaved(true);
       setTimeout(() => setKpiSaved(false), 2500);
     } catch {
-      alert('Failed to save KPIs.');
+      toast('Failed to save KPIs.', 'error');
     } finally {
       setKpiSaving(false);
     }
@@ -116,7 +118,7 @@ export default function SettingsPage() {
       setDemoSaved(true);
       setTimeout(() => setDemoSaved(false), 2500);
     } catch {
-      alert('Failed to save demographics.');
+      toast('Failed to save demographics.', 'error');
     } finally {
       setDemoSaving(false);
     }

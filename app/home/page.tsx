@@ -14,11 +14,10 @@ import { EngagementAreaChart } from '@/components/charts/EngagementAreaChart';
 import { useAuth } from '@/lib/auth-context';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { subscribeToNotifications, markAllRead, markNotificationRead, Notification } from '@/lib/notifications';
 import { getCampaigns, Campaign } from '@/lib/campaigns';
 import { getKpis, KpiData } from '@/lib/kpis';
+import { KpiSkeleton } from '@/components/ui/Skeleton';
 
 // ── Simulated user profile (would come from auth/onboarding in production) ──
 const USER = {
@@ -94,6 +93,7 @@ export default function HomePage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [kpiData, setKpiData] = useState<KpiData | null>(null);
   const [upcomingPosts, setUpcomingPosts] = useState<{ day: string; caption: string; time: string; platform: string }[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -104,7 +104,7 @@ export default function HomePage() {
       if (snap.exists()) setProfile(snap.data() as any);
     }).catch(() => {});
     getCampaigns(user.uid, 5).then(setCampaigns).catch(() => {});
-    getKpis(user.uid).then(setKpiData).catch(() => {});
+    getKpis(user.uid).then(setKpiData).catch(() => {}).finally(() => setDataLoading(false));
 
     // Derive this week's Monday key
     const today = new Date();
@@ -263,28 +263,28 @@ export default function HomePage() {
           {/* KPI strip */}
           <FadeUp delay={0.05}>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {[
-                { label: 'Engagement', value: kpiData?.engagement ?? '—', change: kpiData?.engagementChange ?? '—', icon: Flame },
-                { label: 'CTR', value: kpiData?.ctr ?? '—', change: kpiData?.ctrChange ?? '—', icon: Target },
-                { label: 'ROAS', value: kpiData?.roas ?? '—', change: kpiData?.roasChange ?? '—', icon: Zap },
-                { label: 'Followers', value: kpiData?.followers ?? '—', change: kpiData?.followersChange ?? '—', icon: TrendingUp },
-              ].map((k, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ y: -2, scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
-                  className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm cursor-default"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <k.icon size={16} className="text-slate-400" />
-                    <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${k.change.startsWith('+') ? 'bg-emerald-50 text-emerald-600' : k.change === '—' ? 'bg-slate-100 text-slate-400' : 'bg-red-50 text-red-500'}`}>
-                      {k.change}
-                    </span>
-                  </div>
-                  <p className="text-2xl font-black text-slate-900">{k.value}</p>
-                  <p className="text-xs text-slate-400 font-semibold mt-0.5">{k.label}</p>
-                </motion.div>
-              ))}
+              {dataLoading ? (
+                Array.from({ length: 4 }).map((_, i) => <KpiSkeleton key={i} />)
+              ) : (
+                [
+                  { label: 'Engagement', value: kpiData?.engagement ?? '—', change: kpiData?.engagementChange ?? '—', icon: Flame },
+                  { label: 'CTR', value: kpiData?.ctr ?? '—', change: kpiData?.ctrChange ?? '—', icon: Target },
+                  { label: 'ROAS', value: kpiData?.roas ?? '—', change: kpiData?.roasChange ?? '—', icon: Zap },
+                  { label: 'Followers', value: kpiData?.followers ?? '—', change: kpiData?.followersChange ?? '—', icon: TrendingUp },
+                ].map((k, i) => (
+                  <motion.div key={i} whileHover={{ y: -2, scale: 1.02 }} transition={{ duration: 0.2 }}
+                    className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm cursor-default">
+                    <div className="flex items-center justify-between mb-2">
+                      <k.icon size={16} className="text-slate-400" />
+                      <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${k.change.startsWith('+') ? 'bg-emerald-50 text-emerald-600' : k.change === '—' ? 'bg-slate-100 text-slate-400' : 'bg-red-50 text-red-500'}`}>
+                        {k.change}
+                      </span>
+                    </div>
+                    <p className="text-2xl font-black text-slate-900">{k.value}</p>
+                    <p className="text-xs text-slate-400 font-semibold mt-0.5">{k.label}</p>
+                  </motion.div>
+                ))
+              )}
             </div>
           </FadeUp>
 
