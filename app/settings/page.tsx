@@ -10,6 +10,7 @@ import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile, updateProfile, UserProfile } from '@/lib/user-profile';
 import { getKpis, saveKpis, KpiData } from '@/lib/kpis';
+import { getAnalytics, saveAnalytics } from '@/lib/analytics';
 import { updatePassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -36,6 +37,14 @@ export default function SettingsPage() {
   const [kpis, setKpis] = useState<KpiData>({ engagement: '', engagementChange: '', ctr: '', ctrChange: '', roas: '', roasChange: '', followers: '', followersChange: '' });
   const [kpiSaved, setKpiSaved] = useState(false);
   const [kpiSaving, setKpiSaving] = useState(false);
+  const [demographics, setDemographics] = useState([
+    { name: '18-24', value: 0 },
+    { name: '25-34', value: 0 },
+    { name: '35-44', value: 0 },
+    { name: '45+',   value: 0 },
+  ]);
+  const [demoSaved, setDemoSaved] = useState(false);
+  const [demoSaving, setDemoSaving] = useState(false);
 
   useEffect(() => {
     if (user?.uid) {
@@ -55,6 +64,9 @@ export default function SettingsPage() {
         setForm(f => ({ ...f, email: user.email || '' }));
       });
       getKpis(user.uid).then(data => setKpis(k => ({ ...k, ...data }))).catch(() => {});
+      getAnalytics(user.uid).then(data => {
+        if (data.demographics?.some(d => d.value > 0)) setDemographics(data.demographics);
+      }).catch(() => {});
     }
   }, [user]);
 
@@ -93,6 +105,20 @@ export default function SettingsPage() {
       alert('Failed to save KPIs.');
     } finally {
       setKpiSaving(false);
+    }
+  };
+
+  const handleDemoSave = async () => {
+    if (!user?.uid) return;
+    setDemoSaving(true);
+    try {
+      await saveAnalytics(user.uid, { demographics });
+      setDemoSaved(true);
+      setTimeout(() => setDemoSaved(false), 2500);
+    } catch {
+      alert('Failed to save demographics.');
+    } finally {
+      setDemoSaving(false);
     }
   };
 
@@ -282,6 +308,40 @@ export default function SettingsPage() {
                 <button onClick={handleKpiSave} disabled={kpiSaving}
                   className="px-6 py-2 bg-[#e52521] hover:bg-[#c81916] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl transition-colors shadow-sm">
                   {kpiSaving ? 'Saving...' : kpiSaved ? 'Saved!' : 'Save KPIs'}
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Audience Demographics Card */}
+            <motion.div
+              className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-sm space-y-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.28, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <div className="pb-3 border-b border-slate-100">
+                <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Audience Demographics</h2>
+                <p className="text-slate-400 text-xs font-semibold mt-1">Shown on the Analytics page demographics chart.</p>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {demographics.map((d, i) => (
+                  <div key={d.name} className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{d.name}</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={d.value}
+                      onChange={e => setDemographics(prev => prev.map((x, j) => j === i ? { ...x, value: Number(e.target.value) } : x))}
+                      placeholder="0"
+                      className="w-full bg-[#faf8f6] border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none placeholder:text-slate-400"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end pt-2">
+                <button onClick={handleDemoSave} disabled={demoSaving}
+                  className="px-6 py-2 bg-[#e52521] hover:bg-[#c81916] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl transition-colors shadow-sm">
+                  {demoSaving ? 'Saving...' : demoSaved ? 'Saved!' : 'Save Demographics'}
                 </button>
               </div>
             </motion.div>
