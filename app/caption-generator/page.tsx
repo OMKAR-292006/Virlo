@@ -301,9 +301,12 @@ export default function CaptionGenerator() {
 
             {/* Ad Recommendations Section */}
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-slate-800">
-                <TrendingUp size={15} className="text-amber-500 stroke-[2.5]" />
-                <h3 className="text-xs font-bold tracking-tight">Ad Recommendations</h3>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-slate-800">
+                  <TrendingUp size={15} className="text-amber-500 stroke-[2.5]" />
+                  <h3 className="text-xs font-bold tracking-tight">Ad Suggestions</h3>
+                </div>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider border border-slate-200 rounded-full px-2 py-0.5">Sample templates</span>
               </div>
 
               <div className="grid grid-cols-1 gap-2.5">

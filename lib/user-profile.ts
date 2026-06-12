@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 export interface UserProfile {
@@ -25,8 +25,8 @@ export async function getProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function updateProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
-  await updateDoc(doc(db, 'profiles', uid), {
+  await setDoc(doc(db, 'profiles', uid), {
     ...data,
     updatedAt: new Date().toISOString(),
-  });
+  }, { merge: true });
 }

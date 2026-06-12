@@ -11,13 +11,22 @@ import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
 import AppSidebar from '@/components/ui/AppSidebar';
 
+// Auto-compute the next occurrence of each festival from today
+function nextOccurrence(month: number, day: number): string {
+  const today = new Date();
+  let year = today.getFullYear();
+  const candidate = new Date(year, month - 1, day);
+  if (candidate <= today) year += 1;
+  return new Date(year, month - 1, day).toISOString().split('T')[0];
+}
+
 const UPCOMING_FESTIVALS = [
-  { id: 1, name: "Halloween", date: "2026-10-31", category: "Holiday" },
-  { id: 2, name: "Black Friday", date: "2026-11-27", category: "Shopping" },
-  { id: 3, name: "Cyber Monday", date: "2026-11-30", category: "Shopping" },
-  { id: 4, name: "Christmas Eve", date: "2026-12-24", category: "Holiday" },
-  { id: 5, name: "New Year's Eve", date: "2026-12-31", category: "Holiday" },
-  { id: 6, name: "Valentine's Day", date: "2027-02-14", category: "Holiday" }
+  { id: 1, name: "Halloween", date: nextOccurrence(10, 31), category: "Holiday" },
+  { id: 2, name: "Black Friday", date: nextOccurrence(11, 28), category: "Shopping" },
+  { id: 3, name: "Cyber Monday", date: nextOccurrence(12, 1), category: "Shopping" },
+  { id: 4, name: "Christmas Eve", date: nextOccurrence(12, 24), category: "Holiday" },
+  { id: 5, name: "New Year's Eve", date: nextOccurrence(12, 31), category: "Holiday" },
+  { id: 6, name: "Valentine's Day", date: nextOccurrence(2, 14), category: "Holiday" },
 ];
 
 const inputClass = "bg-black border border-white/[0.08] rounded-xl pl-9 pr-4 py-2 text-sm text-white focus:ring-1 focus:ring-white/[0.2] outline-none w-full sm:w-48 transition-all placeholder:text-neutral-600 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)]";

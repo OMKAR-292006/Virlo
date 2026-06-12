@@ -2,9 +2,11 @@
 // The actual auth state is managed by Firebase client SDK.
 
 export function setSessionCookie() {
-  document.cookie = 'fb_session=1; path=/; max-age=604800; SameSite=Strict';
+  const secure = location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `fb_session=1; path=/; max-age=604800; SameSite=Strict${secure}`;
 }
 
 export function clearSessionCookie() {
-  document.cookie = 'fb_session=; path=/; max-age=0; SameSite=Strict';
+  const secure = location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `fb_session=; path=/; max-age=0; SameSite=Strict${secure}`;
 }
