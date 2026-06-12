@@ -221,6 +221,87 @@ function WeekPicker({ weekOffset, onOffsetChange }: { weekOffset: number; onOffs
   );
 }
 
+// ── New Post Form Component ────────────────────────────────────────────────
+function NewPostForm({
+  weekDays,
+  onSave,
+  onCancel,
+}: {
+  weekDays: { name: string; date: string; month: string; fullDate: Date }[];
+  onSave: (dayIndex: number, caption: string, time: string, platform: 'instagram' | 'facebook' | 'linkedin' | 'twitter') => void;
+  onCancel: () => void;
+}) {
+  const [caption, setCaption] = useState('');
+  const [dayIndex, setDayIndex] = useState(0);
+  const [time, setTime] = useState('09:00 AM');
+  const [platform, setPlatform] = useState<'instagram' | 'facebook' | 'linkedin' | 'twitter'>('instagram');
+
+  const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Post Caption</label>
+        <textarea
+          value={caption}
+          onChange={e => setCaption(e.target.value)}
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all resize-none h-20 placeholder:text-slate-400 leading-normal"
+          placeholder="Type your custom caption here..."
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Posting Day</label>
+          <select
+            value={dayIndex}
+            onChange={e => setDayIndex(Number(e.target.value))}
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all"
+          >
+            {dayNames.map((d, i) => (
+              <option key={d} value={i}>{d} {weekDays[i]?.date}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Posting Time</label>
+          <input
+            type="text"
+            value={time}
+            onChange={e => setTime(e.target.value)}
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all placeholder:text-slate-400"
+            placeholder="e.g. 09:00 AM"
+          />
+        </div>
+      </div>
+      <div>
+        <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Platform</label>
+        <select
+          value={platform}
+          onChange={e => setPlatform(e.target.value as any)}
+          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all"
+        >
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="twitter">Twitter / X</option>
+        </select>
+      </div>
+      <div className="flex gap-2.5 pt-3 border-t border-slate-100">
+        <button type="button" onClick={onCancel}
+          className="flex-1 py-2 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all text-center">
+          Cancel
+        </button>
+        <button type="button"
+          disabled={!caption.trim()}
+          onClick={() => onSave(dayIndex, caption.trim(), time, platform)}
+          className="flex-1 py-2 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:text-slate-500 text-white text-xs font-bold transition-all text-center shadow-sm">
+          Schedule Post
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function ContentPlanner() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [generatorModalOpen, setGeneratorModalOpen] = useState(false);
@@ -743,55 +824,24 @@ export default function ContentPlanner() {
                 </button>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Post Caption</label>
-                  <textarea 
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all resize-none h-20 placeholder:text-slate-400 leading-normal" 
-                    placeholder="Type your custom caption here..." 
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Posting Day</label>
-                    <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all">
-                      <option>Monday</option>
-                      <option>Tuesday</option>
-                      <option>Wednesday</option>
-                      <option>Thursday</option>
-                      <option>Friday</option>
-                      <option>Saturday</option>
-                      <option>Sunday</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Posting Time</label>
-                    <input 
-                      type="text" 
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-slate-400 focus:bg-white transition-all placeholder:text-slate-400" 
-                      placeholder="e.g. 09:00 AM" 
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-2.5 pt-3 border-t border-slate-100 mt-5">
-                  <button 
-                    type="button" 
-                    onClick={() => setNewPostModalOpen(false)}
-                    className="flex-1 py-2 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-500 text-xs font-bold transition-all text-center"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => setNewPostModalOpen(false)}
-                    className="flex-1 py-2 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all text-center shadow-sm"
-                  >
-                    Schedule Post
-                  </button>
-                </div>
-              </div>
+              <NewPostForm
+                weekDays={weekDays}
+                onSave={(dayIndex, caption, time, platform) => {
+                  const updated = calendarData.map((d, i) => {
+                    if (i !== dayIndex) return d;
+                    // Replace the first empty slot, or append
+                    const emptyIdx = d.posts.findIndex(p => p.empty);
+                    const posts = [...d.posts];
+                    const newPost = { caption, time, platform };
+                    if (emptyIdx >= 0) posts[emptyIdx] = newPost;
+                    else posts.push(newPost);
+                    return { ...d, posts };
+                  });
+                  saveCalendar(updated);
+                  setNewPostModalOpen(false);
+                }}
+                onCancel={() => setNewPostModalOpen(false)}
+              />
             </motion.div>
           </div>
         )}

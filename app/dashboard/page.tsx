@@ -24,6 +24,8 @@ import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
 import { getCampaigns, Campaign } from '@/lib/campaigns';
 import { getKpis, KpiData } from '@/lib/kpis';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const kpis = [
   { title: "Total Engagement", valueKey: 'engagement', changeKey: 'engagementChange', icon: TrendingUp, iconColorClass: "text-blue-400", iconBgClass: "bg-blue-400/10" },
@@ -39,13 +41,39 @@ export default function Dashboard() {
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [kpiData, setKpiData] = useState<KpiData | null>(null);
+  const [calendarItems, setCalendarItems] = useState<{ day: string; time: string; type: string; title: string; status: string }[]>([]);
 
   useEffect(() => {
-    if (user?.uid) {
-      getProfile(user.uid).then(p => { if (p) setProfile(p); }).catch(() => {});
-      getCampaigns(user.uid, 10).then(setCampaigns).catch(() => {});
-      getKpis(user.uid).then(setKpiData).catch(() => {});
-    }
+    if (!user?.uid) return;
+    getProfile(user.uid).then(p => { if (p) setProfile(p); }).catch(() => {});
+    getCampaigns(user.uid, 10).then(setCampaigns).catch(() => {});
+    getKpis(user.uid).then(setKpiData).catch(() => {});
+
+    // Load this week's calendar
+    const today = new Date();
+    const dow = today.getDay();
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+    mon.setHours(0, 0, 0, 0);
+    const weekKey = mon.toISOString().split('T')[0];
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    getDoc(doc(db, 'calendar', user.uid, 'weeks', weekKey)).then(snap => {
+      if (!snap.exists()) return;
+      const days: { name: string; posts: any[] }[] = snap.data().days ?? [];
+      const items = days.flatMap((d, i) =>
+        d.posts
+          .filter((p: any) => !p.empty && !p.isHolidayBanner && p.caption)
+          .map((p: any) => ({
+            day: dayNames[i],
+            time: p.time || '',
+            type: p.isTip ? 'Tip' : p.image ? 'Photo' : 'Post',
+            title: (p.caption as string).slice(0, 40) + ((p.caption as string).length > 40 ? '...' : ''),
+            status: 'Scheduled',
+          }))
+      );
+      if (items.length > 0) setCalendarItems(items);
+    }).catch(() => {});
   }, [user]);
 
   const businessName = profile?.businessName || user?.displayName || 'your business';
@@ -187,7 +215,7 @@ export default function Dashboard() {
                   <Link href="/content-planner" className="text-xs text-slate-500 hover:text-slate-900 font-semibold transition-colors">View All</Link>
                 </div>
                 <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-                  {mockCalendar.map((item, i) => (
+                  {(calendarItems.length > 0 ? calendarItems : mockCalendar).map((item, i) => (
                     <Link key={i} href="/content-planner">
                       <div className="group p-3 rounded-2xl border border-slate-200 bg-[#faf8f6] hover:border-slate-300 hover:bg-white transition-all cursor-pointer flex items-center gap-4 shadow-sm">
                         <div className="flex flex-col items-center justify-center w-12 h-12 rounded-xl bg-white border border-slate-200 flex-shrink-0">
