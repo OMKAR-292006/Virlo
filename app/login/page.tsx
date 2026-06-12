@@ -126,11 +126,11 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold text-white mb-1">Sign In</h1>
             <p className="text-sm text-neutral-500 mb-6">Welcome back — let's pick up where you left off.</p>
 
-            {/* Demo hint */}
+            {/* Sign up link */}
             <div className="mb-5 p-3 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-start gap-2.5">
               <Sparkles size={13} className="text-neutral-400 shrink-0 mt-0.5" />
               <p className="text-xs text-neutral-400 leading-relaxed">
-                Demo: <span className="text-white font-medium">demo@brandmatic.ai</span> / <span className="text-white font-medium">demo1234</span>
+                New here? <Link href="/onboarding" className="text-white font-medium hover:underline">Create an account</Link> to get started.
               </p>
             </div>
 
