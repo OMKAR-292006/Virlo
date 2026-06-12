@@ -23,13 +23,14 @@ import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
 import { getCampaigns, Campaign } from '@/lib/campaigns';
+import { getKpis, KpiData } from '@/lib/kpis';
 
 const kpis = [
-  { title: "Total Engagement", value: "2.4M", change: "+12.5%", isPositive: true, icon: TrendingUp, iconColorClass: "text-blue-400", iconBgClass: "bg-blue-400/10" },
-  { title: "Average CTR", value: "4.8%", change: "+1.2%", isPositive: true, icon: MousePointerClick, iconColorClass: "text-emerald-400", iconBgClass: "bg-emerald-400/10" },
-  { title: "Overall ROAS", value: "3.2x", change: "+0.4x", isPositive: true, icon: TrendingUp, iconColorClass: "text-purple-400", iconBgClass: "bg-purple-400/10" },
-  { title: "New Followers", value: "12.4K", change: "+24%", isPositive: true, icon: Users, iconColorClass: "text-amber-400", iconBgClass: "bg-amber-400/10" },
-];
+  { title: "Total Engagement", valueKey: 'engagement', changeKey: 'engagementChange', icon: TrendingUp, iconColorClass: "text-blue-400", iconBgClass: "bg-blue-400/10" },
+  { title: "Average CTR",       valueKey: 'ctr',        changeKey: 'ctrChange',        icon: MousePointerClick, iconColorClass: "text-emerald-400", iconBgClass: "bg-emerald-400/10" },
+  { title: "Overall ROAS",      valueKey: 'roas',       changeKey: 'roasChange',       icon: TrendingUp, iconColorClass: "text-purple-400", iconBgClass: "bg-purple-400/10" },
+  { title: "New Followers",     valueKey: 'followers',  changeKey: 'followersChange',  icon: Users, iconColorClass: "text-amber-400", iconBgClass: "bg-amber-400/10" },
+] as const;
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -37,11 +38,13 @@ export default function Dashboard() {
   const [chartRange, setChartRange] = useState('7d');
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [kpiData, setKpiData] = useState<KpiData | null>(null);
 
   useEffect(() => {
     if (user?.uid) {
       getProfile(user.uid).then(p => { if (p) setProfile(p); }).catch(() => {});
       getCampaigns(user.uid, 10).then(setCampaigns).catch(() => {});
+      getKpis(user.uid).then(setKpiData).catch(() => {});
     }
   }, [user]);
 
@@ -77,6 +80,9 @@ export default function Dashboard() {
               variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
             >
               {kpis.map((kpi, i) => {
+                const value = kpiData?.[kpi.valueKey] ?? '—';
+                const change = kpiData?.[kpi.changeKey] ?? '—';
+                const isPositive = change.startsWith('+');
                 const lightIconColorClass = kpi.iconColorClass
                   .replace('text-blue-400', 'text-blue-600')
                   .replace('text-emerald-400', 'text-emerald-600')
@@ -92,11 +98,15 @@ export default function Dashboard() {
                     key={i}
                     variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } } }}
                   >
-                    <KpiCard 
-                      {...kpi} 
+                    <KpiCard
+                      title={kpi.title}
+                      value={value}
+                      change={change}
+                      isPositive={isPositive}
+                      icon={kpi.icon}
                       iconColorClass={lightIconColorClass}
                       iconBgClass={lightIconBgClass}
-                      light={true} 
+                      light={true}
                     />
                   </motion.div>
                 );

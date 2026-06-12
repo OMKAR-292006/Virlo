@@ -18,6 +18,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { subscribeToNotifications, markAllRead, markNotificationRead, Notification } from '@/lib/notifications';
 import { getCampaigns, Campaign } from '@/lib/campaigns';
+import { getKpis, KpiData } from '@/lib/kpis';
 
 // ── Simulated user profile (would come from auth/onboarding in production) ──
 const USER = {
@@ -48,13 +49,7 @@ const DEFAULT_TASKS = [
   { id: 4, label: 'Generate festival campaign', done: false },
 ];
 
-// ── KPI strip ───────────────────────────────────────────────────────────────
-const kpis = [
-  { label: 'Engagement', value: '2.4M', change: '+12.5%', up: true, icon: Flame },
-  { label: 'CTR', value: '4.8%', change: '+1.2%', up: true, icon: Target },
-  { label: 'ROAS', value: '3.2x', change: '+0.4x', up: true, icon: Zap },
-  { label: 'Followers', value: '12.4K', change: '+24%', up: true, icon: TrendingUp },
-];
+// ── KPI strip — loaded from Firestore ──────────────────────────────────────
 
 const ease = [0.4, 0, 0.2, 1] as const;
 
@@ -97,6 +92,7 @@ export default function HomePage() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [kpiData, setKpiData] = useState<KpiData | null>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -107,6 +103,7 @@ export default function HomePage() {
         if (snap.exists()) setProfile(snap.data() as any);
       }).catch(() => {});
       getCampaigns(user.uid, 5).then(setCampaigns).catch(() => {});
+      getKpis(user.uid).then(setKpiData).catch(() => {});
     }
   }, [user]);
 
@@ -244,7 +241,12 @@ export default function HomePage() {
           {/* KPI strip */}
           <FadeUp delay={0.05}>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {kpis.map((k, i) => (
+              {[
+                { label: 'Engagement', value: kpiData?.engagement ?? '—', change: kpiData?.engagementChange ?? '—', icon: Flame },
+                { label: 'CTR', value: kpiData?.ctr ?? '—', change: kpiData?.ctrChange ?? '—', icon: Target },
+                { label: 'ROAS', value: kpiData?.roas ?? '—', change: kpiData?.roasChange ?? '—', icon: Zap },
+                { label: 'Followers', value: kpiData?.followers ?? '—', change: kpiData?.followersChange ?? '—', icon: TrendingUp },
+              ].map((k, i) => (
                 <motion.div
                   key={i}
                   whileHover={{ y: -2, scale: 1.02 }}
@@ -253,7 +255,7 @@ export default function HomePage() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <k.icon size={16} className="text-slate-400" />
-                    <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${k.up ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
+                    <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${k.change.startsWith('+') ? 'bg-emerald-50 text-emerald-600' : k.change === '—' ? 'bg-slate-100 text-slate-400' : 'bg-red-50 text-red-500'}`}>
                       {k.change}
                     </span>
                   </div>

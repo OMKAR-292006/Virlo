@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Menu, Check, Eye, EyeOff, CreditCard
+  Menu, Check, Eye, EyeOff, CreditCard, BarChart2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile, updateProfile, UserProfile } from '@/lib/user-profile';
+import { getKpis, saveKpis, KpiData } from '@/lib/kpis';
 import { updatePassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 
@@ -32,6 +33,9 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', newPassword: '' });
+  const [kpis, setKpis] = useState<KpiData>({ engagement: '', engagementChange: '', ctr: '', ctrChange: '', roas: '', roasChange: '', followers: '', followersChange: '' });
+  const [kpiSaved, setKpiSaved] = useState(false);
+  const [kpiSaving, setKpiSaving] = useState(false);
 
   useEffect(() => {
     if (user?.uid) {
@@ -50,6 +54,7 @@ export default function SettingsPage() {
       }).catch(() => {
         setForm(f => ({ ...f, email: user.email || '' }));
       });
+      getKpis(user.uid).then(data => setKpis(k => ({ ...k, ...data }))).catch(() => {});
     }
   }, [user]);
 
@@ -74,6 +79,20 @@ export default function SettingsPage() {
       alert(msg);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleKpiSave = async () => {
+    if (!user?.uid) return;
+    setKpiSaving(true);
+    try {
+      await saveKpis(user.uid, kpis);
+      setKpiSaved(true);
+      setTimeout(() => setKpiSaved(false), 2500);
+    } catch {
+      alert('Failed to save KPIs.');
+    } finally {
+      setKpiSaving(false);
     }
   };
 
@@ -215,6 +234,55 @@ export default function SettingsPage() {
                 <span className="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
                   In Progress
                 </span>
+              </div>
+            </motion.div>
+
+            {/* KPI Metrics Card */}
+            <motion.div
+              className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-sm space-y-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                  <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <BarChart2 size={14} className="text-slate-500" /> KPI Metrics
+                  </h2>
+                  <p className="text-slate-400 text-xs font-semibold mt-1">These values appear on your Home and Dashboard.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {([
+                  { label: 'Engagement', key: 'engagement', changeKey: 'engagementChange', placeholder: 'e.g. 2.4M' },
+                  { label: 'CTR', key: 'ctr', changeKey: 'ctrChange', placeholder: 'e.g. 4.8%' },
+                  { label: 'ROAS', key: 'roas', changeKey: 'roasChange', placeholder: 'e.g. 3.2x' },
+                  { label: 'Followers', key: 'followers', changeKey: 'followersChange', placeholder: 'e.g. 12.4K' },
+                ] as const).map(({ label, key, changeKey, placeholder }) => (
+                  <div key={key} className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{label}</label>
+                    <div className="flex gap-2">
+                      <input
+                        value={kpis[key] ?? ''}
+                        onChange={e => setKpis(k => ({ ...k, [key]: e.target.value }))}
+                        placeholder={placeholder}
+                        className="flex-1 bg-[#faf8f6] border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none placeholder:text-slate-400"
+                      />
+                      <input
+                        value={kpis[changeKey] ?? ''}
+                        onChange={e => setKpis(k => ({ ...k, [changeKey]: e.target.value }))}
+                        placeholder="+12%"
+                        className="w-20 bg-[#faf8f6] border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 focus:outline-none placeholder:text-slate-400"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-end pt-2">
+                <button onClick={handleKpiSave} disabled={kpiSaving}
+                  className="px-6 py-2 bg-[#e52521] hover:bg-[#c81916] disabled:bg-slate-300 text-white text-xs font-bold rounded-xl transition-colors shadow-sm">
+                  {kpiSaving ? 'Saving...' : kpiSaved ? 'Saved!' : 'Save KPIs'}
+                </button>
               </div>
             </motion.div>
 
