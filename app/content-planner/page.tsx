@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -13,6 +13,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import AppSidebar from '@/components/ui/AppSidebar';
 import { useAuth } from '@/lib/auth-context';
 import { getProfile } from '@/lib/user-profile';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -281,120 +283,63 @@ export default function ContentPlanner() {
   const [formData, setFormData] = useState({ businessName: '', industry: '', targetAudience: '' });
   const { user } = useAuth();
 
+  // Firestore week key — Monday ISO date string
+  const getWeekKey = useCallback((offset: number) => {
+    const today = new Date();
+    const dow = today.getDay();
+    const mon = new Date(today);
+    mon.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1) + offset * 7);
+    mon.setHours(0, 0, 0, 0);
+    return mon.toISOString().split('T')[0];
+  }, []);
+
+  const buildDefaultDays = useCallback((days: ReturnType<typeof getWeekDays>): CalendarDay[] => [
+    { name: 'Mon', date: days[0].date, posts: [{ image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&auto=format&fit=crop&q=80', caption: 'Starting the week strong! Check out our new guide on local SEO...', time: '09:00 AM', platform: 'instagram' }] },
+    { name: 'Tue', date: days[1].date, posts: [{ isTip: true, tipText: 'TIP', caption: 'Did you know? Consistent posting can increase your reach by up to...', time: '12:30 PM', platform: 'facebook' }] },
+    { name: 'Wed', date: days[2].date, posts: [{ empty: true, caption: 'Drop a post here or create new', time: '', platform: 'instagram' }] },
+    { name: 'Thu', date: days[3].date, posts: [{ isHolidayBanner: true, holidayTitle: '☕ National Coffee Day' }, { image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&auto=format&fit=crop&q=80', caption: 'Happy National Coffee Day! ☕ How many cups does it take to run your...', time: '08:00 AM', platform: 'instagram' }] },
+    { name: 'Fri', date: days[4].date, posts: [{ empty: true, caption: 'Drop a post here or create new', time: '', platform: 'instagram' }] },
+    { name: 'Sat', date: days[5].date, posts: [{ image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=500&auto=format&fit=crop&q=80', caption: 'Weekend gear checks! What is your absolute must-have essential today?', time: '10:00 AM', platform: 'instagram' }] },
+    { name: 'Sun', date: days[6].date, posts: [{ empty: true, caption: 'Drop a post here or create new', time: '', platform: 'instagram' }] },
+  ], []);
+
+  // Reset calendar when week changes — load from Firestore or fall back to defaults
+  const [calendarData, setCalendarData] = useState<CalendarDay[]>(() => buildDefaultDays(weekDays));
+
+  useEffect(() => {
+    const defaults = buildDefaultDays(weekDays);
+    if (!user?.uid) { setCalendarData(defaults); return; }
+    const weekKey = getWeekKey(weekOffset);
+    getDoc(doc(db, 'calendar', user.uid, 'weeks', weekKey))
+      .then(snap => {
+        if (snap.exists()) {
+          const saved: CalendarDay[] = snap.data().days;
+          // Patch dates to match actual week (in case year changed)
+          setCalendarData(saved.map((d, i) => ({ ...d, date: weekDays[i].date })));
+        } else {
+          setCalendarData(defaults);
+        }
+      })
+      .catch(() => setCalendarData(defaults));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weekOffset, user]);
+
+  const saveCalendar = useCallback((data: CalendarDay[]) => {
+    setCalendarData(data);
+    if (!user?.uid) return;
+    const weekKey = getWeekKey(weekOffset);
+    setDoc(doc(db, 'calendar', user.uid, 'weeks', weekKey), { days: data }, { merge: true })
+      .catch(() => {});
+  }, [user, weekOffset, getWeekKey]);
+
   // Pre-fill AI generator form from Firestore profile
   useEffect(() => {
     if (user?.uid) {
       getProfile(user.uid).then(p => {
-        if (p) {
-          setFormData({
-            businessName: p.businessName || '',
-            industry: p.industry || '',
-            targetAudience: p.targetAudience || '',
-          });
-        }
+        if (p) setFormData({ businessName: p.businessName || '', industry: p.industry || '', targetAudience: p.targetAudience || '' });
       }).catch(() => {});
     }
   }, [user]);
-
-  // Default demo schedule — dates come from real weekDays
-  const initialDays: CalendarDay[] = [
-    {
-      name: 'Mon',
-      date: weekDays[0].date,
-      posts: [
-        {
-          image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&auto=format&fit=crop&q=80',
-          caption: 'Starting the week strong! Check out our new guide on local SEO...',
-          time: '09:00 AM',
-          platform: 'instagram'
-        }
-      ]
-    },
-    {
-      name: 'Tue',
-      date: weekDays[1].date,
-      posts: [
-        {
-          isTip: true,
-          tipText: 'TIP',
-          caption: 'Did you know? Consistent posting can increase your reach by up to...',
-          time: '12:30 PM',
-          platform: 'facebook'
-        }
-      ]
-    },
-    {
-      name: 'Wed',
-      date: weekDays[2].date,
-      posts: [
-        {
-          empty: true,
-          caption: 'Drop a post here or create new',
-          time: '',
-          platform: 'instagram'
-        }
-      ]
-    },
-    {
-      name: 'Thu',
-      date: weekDays[3].date,
-      posts: [
-        {
-          isHolidayBanner: true,
-          holidayTitle: '☕ National Coffee Day'
-        },
-        {
-          image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&auto=format&fit=crop&q=80',
-          caption: 'Happy National Coffee Day! ☕ How many cups does it take to run your...',
-          time: '08:00 AM',
-          platform: 'instagram'
-        }
-      ]
-    },
-    {
-      name: 'Fri',
-      date: weekDays[4].date,
-      posts: [
-        {
-          empty: true,
-          caption: 'Drop a post here or create new',
-          time: '',
-          platform: 'instagram'
-        }
-      ]
-    },
-    {
-      name: 'Sat',
-      date: weekDays[5].date,
-      posts: [
-        {
-          image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=500&auto=format&fit=crop&q=80',
-          caption: 'Weekend gear checks! What is your absolute must-have essential today?',
-          time: '10:00 AM',
-          platform: 'instagram'
-        }
-      ]
-    },
-    {
-      name: 'Sun',
-      date: weekDays[6].date,
-      posts: [
-        {
-          empty: true,
-          caption: 'Drop a post here or create new',
-          time: '',
-          platform: 'instagram'
-        }
-      ]
-    }
-  ];
-
-  // Reset calendar when week changes
-  const [calendarData, setCalendarData] = useState<CalendarDay[]>(() => initialDays);
-  useEffect(() => {
-    setCalendarData(initialDays.map((day, i) => ({ ...day, date: weekDays[i].date })));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weekOffset]);
 
   // Sync edits when drawer opens
   useEffect(() => {
@@ -461,12 +406,12 @@ export default function ContentPlanner() {
 
         return {
           name,
-          date: String(24 + idx),
+          date: weekDays[idx].date,
           posts
         };
       });
 
-      setCalendarData(updatedCalendar);
+      saveCalendar(updatedCalendar);
       setGeneratorModalOpen(false);
     } catch (err: any) { 
       setError(err.message); 
@@ -479,22 +424,12 @@ export default function ContentPlanner() {
   const handleSavePostDetails = () => {
     if (!selectedPost) return;
     const { dayIdx, postIdx } = selectedPost;
-    
-    setCalendarData(prev => {
-      const copy = [...prev];
-      const day = { ...copy[dayIdx] };
-      const posts = [...day.posts];
-      posts[postIdx] = {
-        ...posts[postIdx],
-        caption: editCaption,
-        time: editTime,
-        platform: editPlatform
-      };
-      day.posts = posts;
-      copy[dayIdx] = day;
-      return copy;
+    const copy = calendarData.map((d, di) => {
+      if (di !== dayIdx) return d;
+      const posts = d.posts.map((p, pi) => pi !== postIdx ? p : { ...p, caption: editCaption, time: editTime, platform: editPlatform });
+      return { ...d, posts };
     });
-
+    saveCalendar(copy);
     setSelectedPost(null);
   };
 
@@ -502,25 +437,12 @@ export default function ContentPlanner() {
   const handleDeletePost = () => {
     if (!selectedPost) return;
     const { dayIdx, postIdx } = selectedPost;
-
-    setCalendarData(prev => {
-      const copy = [...prev];
-      const day = { ...copy[dayIdx] };
-      const posts = [...day.posts];
-      
-      // Instead of completely deleting, replace with the empty placeholder
-      posts[postIdx] = {
-        empty: true,
-        caption: 'Drop a post here or create new',
-        time: '',
-        platform: 'instagram'
-      };
-      
-      day.posts = posts;
-      copy[dayIdx] = day;
-      return copy;
+    const copy = calendarData.map((d, di) => {
+      if (di !== dayIdx) return d;
+      const posts = d.posts.map((p, pi) => pi !== postIdx ? p : { empty: true, caption: 'Drop a post here or create new', time: '', platform: 'instagram' as const });
+      return { ...d, posts };
     });
-
+    saveCalendar(copy);
     setSelectedPost(null);
   };
 
