@@ -16,6 +16,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { subscribeToNotifications, markAllRead, markNotificationRead, Notification } from '@/lib/notifications';
 
 // ── Simulated user profile (would come from auth/onboarding in production) ──
 const USER = {
@@ -75,6 +76,7 @@ export default function HomePage() {
   const [newTaskLabel, setNewTaskLabel] = useState('');
   const [notifCount, setNotifCount] = useState(3);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profile, setProfile] = useState<{ businessName?: string; industry?: string } | null>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -87,6 +89,16 @@ export default function HomePage() {
         if (snap.exists()) setProfile(snap.data() as any);
       }).catch(() => {});
     }
+  }, [user]);
+
+  // Subscribe to real-time notifications
+  useEffect(() => {
+    if (!user?.uid) return;
+    const unsub = subscribeToNotifications(user.uid, (items) => {
+      setNotifications(items);
+      setNotifCount(items.filter(n => !n.read).length);
+    });
+    return () => unsub();
   }, [user]);
 
   const displayName = profile?.businessName || user?.displayName || USER.name;
@@ -155,25 +167,25 @@ export default function HomePage() {
                       <span className="text-sm font-bold text-white">Notifications</span>
                       {notifCount > 0 && <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">{notifCount} new</span>}
                     </div>
-                    <div className="divide-y divide-white/[0.05]">
-                      {[
-                        { icon: '🚀', title: 'Campaign live', desc: 'Summer Sale 2024 is now running.', time: '2m ago' },
-                        { icon: '📈', title: 'ROAS spike', desc: 'Instagram Ads ROAS jumped to 4.1x.', time: '1h ago' },
-                        { icon: '🤖', title: 'AI plan ready', desc: 'Your weekly content plan is generated.', time: '3h ago' },
-                      ].map((n, i) => (
-                        <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors cursor-pointer">
+                    <div className="divide-y divide-white/[0.05] max-h-64 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="px-4 py-6 text-center text-neutral-500 text-xs">No notifications yet</div>
+                      ) : notifications.map((n) => (
+                        <div key={n.id}
+                          onClick={() => user?.uid && markNotificationRead(user.uid, n.id)}
+                          className={`flex items-start gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors cursor-pointer ${!n.read ? 'bg-white/[0.02]' : ''}`}>
                           <span className="text-lg mt-0.5">{n.icon}</span>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold text-white">{n.title}</p>
+                            <p className={`text-xs font-semibold ${n.read ? 'text-neutral-300' : 'text-white'}`}>{n.title}</p>
                             <p className="text-[11px] text-neutral-500 mt-0.5 truncate">{n.desc}</p>
                           </div>
-                          <span className="text-[10px] text-neutral-600 shrink-0">{n.time}</span>
+                          {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0 mt-1.5" />}
                         </div>
                       ))}
                     </div>
                     <div className="px-4 py-2.5 border-t border-white/[0.08]">
                       <button
-                        onClick={() => { setNotifCount(0); setNotifOpen(false); }}
+                        onClick={() => { if (user?.uid) markAllRead(user.uid); setNotifOpen(false); }}
                         className="text-xs text-neutral-400 hover:text-white transition-colors font-medium"
                       >
                         Mark all as read

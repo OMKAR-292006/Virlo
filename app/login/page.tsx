@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, TrendingUp, Zap, Clock, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import AuthSuccess from '@/components/ui/AuthSuccess';
 import { setSessionCookie } from '@/lib/session';
@@ -59,6 +59,22 @@ export default function LoginPage() {
   }, []);
 
   const [showSuccess, setShowSuccess] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
+
+  const handleForgotPassword = async () => {
+    if (!form.email) { setError('Enter your email address first.'); return; }
+    setResetLoading(true);
+    setError(null);
+    try {
+      await sendPasswordResetEmail(auth, form.email);
+      setResetSent(true);
+    } catch (err: any) {
+      setError('Could not send reset email. Check the address and try again.');
+    } finally {
+      setResetLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,11 +145,14 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
+                <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Password</label>
-                  <button type="button" className="text-xs text-neutral-500 hover:text-white transition-colors font-semibold">
-                    Forgot Password?
+                  <button type="button"
+                    onClick={handleForgotPassword}
+                    disabled={resetLoading}
+                    className="text-xs text-neutral-500 hover:text-white transition-colors font-semibold disabled:opacity-50">
+                    {resetLoading ? 'Sending...' : resetSent ? '✓ Email sent!' : 'Forgot Password?'}
                   </button>
                 </div>
                 <div className="relative">

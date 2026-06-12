@@ -13,6 +13,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import AuthSuccess from "@/components/ui/AuthSuccess";
 import { setSessionCookie } from "@/lib/session";
+import { seedNotifications } from "@/lib/notifications";
 
 const formSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -103,6 +104,7 @@ export default function OnboardingForm() {
         brandTone: data.brandTone,
         createdAt: new Date().toISOString(),
       });
+      await seedNotifications(userCred.user.uid);
       setIsSuccess(true);
       setSessionCookie();
       setTimeout(() => router.push("/home"), 1800);
