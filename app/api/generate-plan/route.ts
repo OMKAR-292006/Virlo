@@ -21,10 +21,10 @@ export async function POST(req: Request) {
     const { businessName, industry, targetAudience } = body;
 
     if (!businessName || !industry || !targetAudience) {
-      return NextResponse.json(
-        { error: "Missing required fields: businessName, industry, targetAudience" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+    if (businessName.length > 200 || industry.length > 200 || targetAudience.length > 1000) {
+      return NextResponse.json({ error: "Input too long." }, { status: 400 });
     }
 
     const planData = await generateWeeklyPlan({ businessName, industry, targetAudience });

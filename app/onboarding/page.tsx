@@ -12,6 +12,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import AuthSuccess from "@/components/ui/AuthSuccess";
+import { setSessionCookie } from "@/lib/session";
 
 const formSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -103,6 +104,7 @@ export default function OnboardingForm() {
         createdAt: new Date().toISOString(),
       });
       setIsSuccess(true);
+      setSessionCookie();
       setTimeout(() => router.push("/home"), 1800);
     } catch (err: any) {
       const code = err?.code || "";

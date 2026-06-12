@@ -8,6 +8,7 @@ import { Sparkles, House, LayoutDashboard, Megaphone, CalendarDays, BarChart2, X
 import { useAuth } from '@/lib/auth-context';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { clearSessionCookie } from '@/lib/session';
 
 const navItems = [
   { name: 'Home', icon: House, href: '/home' },
@@ -55,9 +56,11 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
 
   const handleSignOut = async () => {
     try {
+      clearSessionCookie();
       await signOut(auth);
       router.push('/login');
     } catch {
+      clearSessionCookie();
       router.push('/login');
     }
   };

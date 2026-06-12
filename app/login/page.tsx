@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import AuthSuccess from '@/components/ui/AuthSuccess';
+import { setSessionCookie } from '@/lib/session';
 
 const SLIDES = [
   {
@@ -66,6 +67,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, form.email, form.password);
+      setSessionCookie();
       setShowSuccess(true);
       setTimeout(() => router.push('/home'), 1800);
     } catch (err: any) {
