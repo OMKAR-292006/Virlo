@@ -3,7 +3,7 @@ import { generateMarketingStrategy } from "@/lib/gemini";
 import { requireSession, handleApiError } from "@/lib/api-auth";
 
 export async function POST(req: NextRequest) {
-  const unauth = requireSession(req);
+  const unauth = requireSession(req, 'generate-strategy');
   if (unauth) return unauth;
 
   try {

@@ -5,7 +5,7 @@ import { requireSession, handleApiError } from "@/lib/api-auth";
 const VALID_TONES = ['Professional', 'Funny', 'Hype', 'Empathetic'];
 
 export async function POST(req: NextRequest) {
-  const unauth = requireSession(req);
+  const unauth = requireSession(req, 'generate-captions');
   if (unauth) return unauth;
 
   try {
