@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
+import { setSessionCookie, clearSessionCookie } from './session';
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +20,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      // Keep the session cookie in sync with Firebase auth state
+      if (u) {
+        setSessionCookie(); // renew on every auth state confirmation
+      } else {
+        clearSessionCookie();
+      }
     });
     return unsubscribe;
   }, []);
