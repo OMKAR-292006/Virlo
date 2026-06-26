@@ -54,7 +54,7 @@ const TONE_LIST = [
 ];
 
 const SLIDES = [
-  { headline: "Create your account and get started.", sub: "Join thousands of businesses already growing with Brand Matic AI.", stats: [{ label: "Setup time", value: "< 3", unit: "minutes", color: "text-emerald-400", icon: Clock }, { label: "Campaigns ready", value: "10x", unit: "faster", color: "text-blue-400", icon: Zap }] },
+  { headline: "Create your account and get started.", sub: "Join thousands of businesses already growing with BrandMatice AI.", stats: [{ label: "Setup time", value: "< 3", unit: "minutes", color: "text-emerald-400", icon: Clock }, { label: "Campaigns ready", value: "10x", unit: "faster", color: "text-blue-400", icon: Zap }] },
   { headline: "Set up your brand identity in minutes.", sub: "Tell us who you are so our AI can craft campaigns that feel authentically yours.", stats: [{ label: "Brands onboarded", value: "5K+", unit: "active", color: "text-purple-400", icon: TrendingUp }, { label: "Avg. setup", value: "2", unit: "minutes", color: "text-emerald-400", icon: Clock }] },
   { headline: "Hyper-targeted content for your exact audience.", sub: "The more we know about your customers, the sharper your targeting becomes.", stats: [{ label: "Engagement lift", value: "+42%", unit: "avg.", color: "text-purple-400", icon: TrendingUp }, { label: "Audience match", value: "98%", unit: "accuracy", color: "text-emerald-400", icon: Target }] },
   { headline: "AI that optimizes for the goals that matter.", sub: "Your goals shape every campaign, caption, and content plan we generate.", stats: [{ label: "ROAS boost", value: "3.2x", unit: "avg.", color: "text-blue-400", icon: TrendingUp }, { label: "Cost reduction", value: "70%", unit: "lower", color: "text-emerald-400", icon: Zap }] },
@@ -154,7 +154,7 @@ export default function OnboardingForm() {
           <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
             <Sparkles size={16} className="text-white" />
           </div>
-          <span className="font-bold text-sm tracking-tight text-white">Brand Matic</span>
+          <span className="font-bold text-sm tracking-tight text-white">BrandMatice</span>
         </Link>
 
         {/* Step progress */}

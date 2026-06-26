@@ -22,7 +22,7 @@ import { KpiSkeleton } from '@/components/ui/Skeleton';
 // ── Simulated user profile (would come from auth/onboarding in production) ──
 const USER = {
   name: 'Omkar',
-  business: 'Brand Matic',
+  business: 'BrandMatice',
   industry: 'E-commerce',
   tone: 'Modern & Bold',
   goals: ['Increase sales', 'Brand awareness'],

@@ -115,7 +115,7 @@ export default function AppSidebar({ mobileOpen, onMobileClose }: Props) {
                     <Sparkles size={18} />
                   </div>
                   <span className="font-bold text-lg tracking-tight text-white whitespace-nowrap group-hover:text-neutral-300 transition-colors">
-                    Brand Matic
+                    BrandMatice
                   </span>
                 </Link>
                 {/* Desktop collapse button */}

@@ -43,7 +43,7 @@ export async function markAllRead(uid: string) {
 export async function seedNotifications(uid: string) {
   const ref = collection(db, 'notifications', uid, 'items');
   const initial = [
-    { icon: '🚀', title: 'Welcome to Brand Matic!', desc: 'Your workspace is ready. Start by generating a caption.', read: false },
+    { icon: '🚀', title: 'Welcome to BrandMatice!', desc: 'Your workspace is ready. Start by generating a caption.', read: false },
     { icon: '🤖', title: 'AI plan ready', desc: 'Your first weekly content plan has been generated.', read: false },
     { icon: '📈', title: 'Get started', desc: 'Check out the Trend Engine to catch the next viral moment.', read: false },
   ];

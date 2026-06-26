@@ -70,7 +70,7 @@ function DemoModal({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-black">
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-white" />
-            <span className="text-sm font-semibold text-white">Brand Matic Live Platform Preview</span>
+            <span className="text-sm font-semibold text-white">BrandMatice Live Platform Preview</span>
           </div>
           <button onClick={onClose} className="text-neutral-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/5">
             <X size={18} />
@@ -208,7 +208,7 @@ export default function LandingPage() {
             <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
               <Sparkles size={18} className="text-white" />
             </div>
-            <span className="font-bold text-lg tracking-tight text-white">Brand Matic</span>
+            <span className="font-bold text-lg tracking-tight text-white">BrandMatice</span>
           </div>
           <div className="hidden md:flex items-center gap-4">
             <Link href="/login" className="text-sm font-medium text-neutral-400 hover:text-white transition-colors">Log in</Link>
@@ -362,7 +362,7 @@ export default function LandingPage() {
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.1] to-transparent" />
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to grow smarter?</h2>
               <p className="text-neutral-500 mb-8 max-w-md mx-auto text-sm">
-                Join thousands of businesses already automating their marketing with Brand Matic AI.
+                Join thousands of businesses already automating their marketing with BrandMatice AI.
               </p>
               <Link href="/onboarding">
                 <motion.button
@@ -386,9 +386,9 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-white/10"><Sparkles size={16} className="text-white" /></div>
-            <span className="font-semibold text-white">Brand Matic</span>
+            <span className="font-semibold text-white">BrandMatice</span>
           </div>
-          <p className="text-neutral-600 text-sm">© {new Date().getFullYear()} Brand Matic Inc. All rights reserved.</p>
+          <p className="text-neutral-600 text-sm">© {new Date().getFullYear()} BrandMatice Inc. All rights reserved.</p>
           <div className="flex items-center gap-4">
             {[
               { label: 'Twitter', path: 'M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z' },

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Brand Matic",
+  title: "BrandMatice",
   description: "AI-Powered Marketing Operating System",
 };
 

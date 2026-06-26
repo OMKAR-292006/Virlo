@@ -29,7 +29,7 @@ const SLIDES = [
   },
   {
     headline: "AI that writes, schedules, and optimizes — so you don't have to.",
-    sub: 'From captions to full weekly content calendars, Brand Matic handles the heavy lifting.',
+    sub: 'From captions to full weekly content calendars, BrandMatice handles the heavy lifting.',
     stats: [
       { label: 'Posts scheduled', value: '500+', unit: '/ month', color: 'text-amber-400', icon: Target },
       { label: 'Cost reduction', value: '70%', unit: 'lower', color: 'text-blue-400', icon: Zap },
@@ -113,7 +113,7 @@ export default function LoginPage() {
           <div className="p-1.5 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
             <Sparkles size={16} className="text-white" />
           </div>
-          <span className="font-bold text-sm tracking-tight text-white">Brand Matic</span>
+          <span className="font-bold text-sm tracking-tight text-white">BrandMatice</span>
         </Link>
 
         {/* Form — centered vertically */}

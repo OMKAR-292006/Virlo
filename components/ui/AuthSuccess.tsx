@@ -49,7 +49,7 @@ export default function AuthSuccess({ message = "Setting up your workspace..." }
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <p className="text-white font-bold text-xl tracking-tight mb-1">Brand Matic</p>
+          <p className="text-white font-bold text-xl tracking-tight mb-1">BrandMatice</p>
           <p className="text-neutral-500 text-sm">{message}</p>
         </motion.div>
 
